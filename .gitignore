@@ -218,3 +218,25 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Môi trường và khóa
+.env
+venv/
+.venv/
+
+# Frontend
+node_modules/
+dist/
+
+# AI
+ai/data/*
+!ai/data/.gitkeep
+*.h5
+*.pt
+*.ckpt
+
+# Khác
+__pycache__/
+*.pyc
+.vscode/
+.idea/
