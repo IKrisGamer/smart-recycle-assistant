@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lịch sử phân loại – Smart Recycle Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#0e3a30;--deep2:#14493d;--mint:#e6f1e8;--ink:#10231d;--muted:#4d6258;--sun:#f6c733;--organic:#2e7d46;--recycle:#2a6fdb;--hazard:#d23c27;--residual:#5b6672}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--mint);color:var(--ink);line-height:1.6}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+.top{background:var(--deep);color:#fff;border-radius:0 0 40px 40px;padding-bottom:64px;position:relative;overflow:hidden}
+.top::before{content:"";position:absolute;right:-120px;top:-150px;width:440px;height:440px;border-radius:50%;border:56px solid var(--deep2)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:68px;position:relative}
+.brand{font-weight:800;color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo{display:flex;gap:3px;align-items:flex-end}.logo b{width:9px;border-radius:2px 2px 4px 4px}
+nav{display:flex;gap:24px;font-size:15px;align-items:center}
+nav a{color:#bcd6c9;text-decoration:none}nav a:hover,nav a[aria-current]{color:#fff}
+nav a[aria-current]{font-weight:700;border-bottom:3px solid var(--sun);padding-bottom:2px}
+.who{background:var(--deep2);padding:6px 14px;border-radius:999px;color:#fff;font-size:14px}
+.head{padding-top:30px;position:relative}
+h1{font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.02;font-weight:900;letter-spacing:-.03em}
+.head p{margin-top:12px;color:#cfe3d8;max-width:50ch}
+
+/* Thống kê: thanh xếp chồng như bốn thùng */
+.stats{background:#fff;border-radius:24px;padding:24px;margin-top:-40px;position:relative;box-shadow:0 24px 50px -30px rgba(0,0,0,.5)}
+.total{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.total strong{font-size:3rem;font-weight:900;letter-spacing:-.03em;line-height:1}
+.total span{color:var(--muted)}
+.stack{display:flex;height:22px;border-radius:11px;overflow:hidden;margin-top:16px;background:#e1ebe3;gap:3px}
+.stack i{display:block;background:var(--c);min-width:0;transition:flex .5s}
+.legend{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.lg{display:flex;gap:10px;align-items:center}
+.lg s{width:14px;height:14px;border-radius:4px;background:var(--c);flex:none}
+.lg b{font-size:1.25rem;display:block;line-height:1.1}
+.lg small{color:var(--muted);font-size:13px}
+
+/* Lọc + danh sách */
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:34px;align-items:center}
+.chip{font:inherit;font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;border:2px solid #c3d5c8;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:8px}
+.chip s{width:10px;height:10px;border-radius:50%;background:var(--c,var(--ink))}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.clear{margin-left:auto;background:none;border:0;font:inherit;font-size:14px;font-weight:700;color:var(--hazard);cursor:pointer;text-decoration:underline}
+.list{list-style:none;padding:0;margin-top:16px;display:grid;gap:10px}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;background:#fff;border-radius:16px;padding:14px 18px 14px 0;overflow:hidden}
+.item::before{content:"";align-self:stretch;width:8px;background:var(--c)}
+.item h3{font-size:1.02rem;line-height:1.3}
+.item p{font-size:13.5px;color:var(--muted)}
+.tag{display:inline-block;color:#fff;background:var(--c);font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;margin-right:8px}
+.conf{text-align:right;font-size:14px;font-weight:700;min-width:70px}
+.conf small{display:block;font-weight:400;color:var(--muted)}
+.empty{background:#fff;border-radius:20px;padding:44px 22px;text-align:center;margin-top:16px}
+.empty h3{font-size:1.2rem}
+.empty p{color:var(--muted);margin:6px 0 16px}
+.cta{display:inline-block;background:var(--sun);color:var(--ink);font-weight:800;text-decoration:none;padding:12px 22px;border-radius:12px}
+.note{margin-top:14px;font-size:13px;color:var(--muted)}
+footer{padding:48px 0 32px;color:var(--muted);font-size:14px}
+[hidden]{display:none!important}
+
+@media(max-width:760px){
+  nav a:not([aria-current]):not(.who){display:none}
+  .legend{grid-template-columns:repeat(2,1fr)}
+  .item{grid-template-columns:auto 1fr;padding-right:14px}
+  .conf{grid-column:2;text-align:left}
+  .clear{margin-left:0}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top">
+  <header><div class="wrap">
+    <a class="brand" href="home.html"><span class="logo" aria-hidden="true"><b style="height:12px;background:#5fc27a"></b><b style="height:18px;background:#5b9bf5"></b><b style="height:15px;background:#f2735f"></b><b style="height:21px;background:#9aa6b2"></b></span>Smart Recycle</a>
+    <nav aria-label="Điều hướng chính">
+      <a href="home.html">Phân loại</a>
+      <a href="lich-su.html" aria-current="page">Lịch sử</a>
+      <a class="who" id="who" href="login.html">Đăng nhập</a>
+    </nav>
+  </div></header>
+  <div class="wrap head">
+    <h1>Lịch sử phân loại của bạn</h1>
+    <p>Xem lại từng món rác đã nhận diện và theo dõi bạn đang bỏ nhiều nhất vào thùng nào.</p>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="stats" aria-label="Thống kê">
+    <div class="total"><strong id="total">0</strong><span>món rác đã phân loại</span></div>
+    <div class="stack" id="stack" role="img" aria-label="Tỷ lệ các nhóm rác"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <div class="bar" id="filters" role="group" aria-label="Lọc theo nhóm"></div>
+  <ul class="list" id="list"></ul>
+  <div class="empty" id="empty" hidden>
+    <h3 id="emptyTitle">Chưa có món rác nào</h3>
+    <p id="emptyText">Chụp món rác đầu tiên, kết quả sẽ xuất hiện ở đây.</p>
+    <a class="cta" href="home.html">Phân loại ngay</a>
+  </div>
+  <p class="note" id="note" hidden></p>
+</main>
+<div class="wrap"><footer>Smart Recycle Assistant </footer></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const GROUPS={organic:{name:"Hữu cơ",color:"#2e7d46"},recycle:{name:"Tái chế",color:"#2a6fdb"},hazard:{name:"Nguy hại",color:"#d23c27"},residual:{name:"Rác còn lại",color:"#5b6672"}};
+const CLASSES={plastic:["Chai nhựa / hộp nhựa","recycle"],metal:["Lon kim loại","recycle"],paper:["Giấy / bìa carton","recycle"],glass:["Thủy tinh","recycle"],food:["Rác thực phẩm","organic"],hazard:["Pin / bóng đèn / điện tử nhỏ","hazard"],soft:["Túi nilon / hộp xốp / ly trà sữa","residual"],other:["Rác khác","residual"]};
+
+/* Tên người dùng từ login.html */
+try{const u=JSON.parse(localStorage.getItem("sr_user")||"null");if(u){$("who").textContent=u.name;$("who").removeAttribute("href")}}catch(_){}
+
+/* Dữ liệu mẫu khi chưa có backend */
+function sample(){
+  const labels=["plastic","food","paper","soft","metal","food","hazard","glass","plastic","soft","paper","other","food","plastic"];
+  return labels.map((l,i)=>({id:i+1,label:l,confidence:+(0.62+((i*37)%35)/100).toFixed(2),created_at:new Date(Date.now()-i*i*3600e3*5-i*1800e3).toISOString()}));
+}
+let data=[],filter="all";
+
+async function load(){
+  try{
+    /* Backend FastAPI: GET /api/history  ->  [{id,label,confidence,created_at}] (mới nhất trước) */
+    const r=await fetch("/api/history",{headers:{Authorization:"Bearer "+(localStorage.getItem("sr_token")||"")}});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    data=await r.json();
+  }catch(e){
+    data=sample();
+    $("note").hidden=false;$("note").textContent="Chưa kết nối backend nên đây là dữ liệu mẫu để minh họa giao diện.";
+  }
+  render();
+}
+
+function fmt(iso){
+  const d=new Date(iso),diff=(Date.now()-d)/60000;
+  if(diff<1)return "Vừa xong";
+  if(diff<60)return Math.round(diff)+" phút trước";
+  if(diff<1440)return Math.round(diff/60)+" giờ trước";
+  return d.toLocaleDateString("vi-VN",{day:"2-digit",month:"2-digit",year:"numeric"});
+}
+const grp=d=>(CLASSES[d.label]||CLASSES.other)[1];
+
+function render(){
+  const counts={organic:0,recycle:0,hazard:0,residual:0};
+  data.forEach(d=>counts[grp(d)]++);
+  $("total").textContent=data.length;
+  $("stack").innerHTML=Object.keys(GROUPS).filter(k=>counts[k]).map(k=>`<i style="--c:${GROUPS[k].color};flex:${counts[k]}"></i>`).join("");
+  $("legend").innerHTML=Object.keys(GROUPS).map(k=>`<div class="lg" style="--c:${GROUPS[k].color}"><s></s><div><b>${counts[k]}</b><small>${GROUPS[k].name}</small></div></div>`).join("");
+
+  const chips=[["all","Tất cả",null],...Object.keys(GROUPS).map(k=>[k,GROUPS[k].name,GROUPS[k].color])];
+  $("filters").innerHTML=chips.map(([k,n,c])=>`<button class="chip" data-f="${k}" aria-pressed="${filter===k}" ${c?`style="--c:${c}"`:""}>${c?"<s></s>":""}${n}</button>`).join("")+(data.length?`<button class="clear" id="clear" type="button">Xóa lịch sử</button>`:"");
+
+  const rows=data.filter(d=>filter==="all"||grp(d)===filter);
+  $("list").innerHTML=rows.map(d=>{const c=CLASSES[d.label]||CLASSES.other,g=GROUPS[c[1]];
+    return `<li class="item" style="--c:${g.color}"><span></span><div><h3>${c[0]}</h3><p><span class="tag">${g.name}</span>${fmt(d.created_at)}</p></div><div class="conf">${Math.round(d.confidence*100)}%<small>độ tin cậy</small></div></li>`}).join("");
+
+  const none=rows.length===0;
+  $("empty").hidden=!none;
+  if(none&&data.length){$("emptyTitle").textContent="Không có món nào trong nhóm này";$("emptyText").textContent="Thử chọn nhóm khác hoặc xem tất cả."}
+}
+
+$("filters").addEventListener("click",async e=>{
+  const f=e.target.closest(".chip");
+  if(f){filter=f.dataset.f;render();return}
+  if(e.target.id==="clear"&&confirm("Xóa toàn bộ lịch sử phân loại? Thao tác này không hoàn tác được.")){
+    try{await fetch("/api/history",{method:"DELETE",headers:{Authorization:"Bearer "+(localStorage.getItem("sr_token")||"")}})}catch(_){}
+    data=[];$("note").hidden=true;render();
+  }
+});
+load();
+</script>
+</body>
+</html>
