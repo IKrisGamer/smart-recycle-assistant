@@ -17,128 +17,194 @@
                     colors: {
                         primary: '#10B981',
                         secondary: '#059669',
+                        deep: '#0e3a30',
+                        deep2: '#14493d',
+                        mint: '#e6f1e8',
+                        sun: '#f6c733'
                     }
                 }
             }
         }
     </script>
     <style>
-        #map { height: 320px; width: 100%; }
+        #map { height: 420px; width: 100%; border-radius: 16px; }
+        .custom-map-icon { background: none; border: none; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans pb-20">
+<body class="bg-[#e6f1e8] text-gray-800 font-sans pb-16 md:pb-0">
 
-    <!-- Header / Top Bar -->
-    <header class="sticky top-0 bg-white shadow-sm z-20">
-        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
-            <a href="home.html" class="text-gray-600 text-xl hover:text-primary transition">
-                <i class="fa-solid fa-arrow-left"></i>
+    <!-- Header / Navbar Desktop & Mobile -->
+    <header class="bg-[#0e3a30] text-white sticky top-0 z-30 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="home.html" class="flex items-center space-x-2 font-extrabold text-lg text-white">
+                <span class="flex items-end space-x-0.5">
+                    <b class="w-2 h-3 bg-emerald-400 rounded-sm"></b>
+                    <b class="w-2 h-5 bg-blue-400 rounded-sm"></b>
+                    <b class="w-2 h-4 bg-red-400 rounded-sm"></b>
+                    <b class="w-2 h-6 bg-gray-400 rounded-sm"></b>
+                </span>
+                <span>Smart Recycle</span>
             </a>
-            <h1 class="font-bold text-lg text-gray-800">Trạm Thu Gom Tái Chế</h1>
-            <button onclick="locateUser()" class="text-primary text-lg hover:text-secondary">
-                <i class="fa-solid fa-crosshairs"></i>
-            </button>
+
+            <!-- Navigation Desktop -->
+            <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                <a href="home.html" class="text-emerald-200 hover:text-white transition"><i class="fa-solid fa-camera mr-1"></i> Quét AI</a>
+                <a href="history.html" class="text-emerald-200 hover:text-white transition"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Lịch sử</a>
+                <a href="map.html" class="text-white font-bold border-b-2 border-sun pb-1"><i class="fa-solid fa-map-location-dot mr-1"></i> Trạm thu gom</a>
+                <a href="profile.html" class="text-emerald-200 hover:text-white transition"><i class="fa-solid fa-user mr-1"></i> Tài khoản</a>
+                <a href="login.html" class="bg-sun text-gray-900 font-extrabold px-4 py-1.5 rounded-full hover:bg-amber-300 transition"><i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng nhập</a>
+            </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-md mx-auto">
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- Khung Bản Đồ (Map Container) -->
-        <div class="relative">
-            <div id="map" class="z-0"></div>
-            <!-- Badge định vị -->
-            <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full shadow-md text-xs font-semibold text-gray-700 z-[1000] flex items-center">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping mr-2"></span>
-                Đang hiển thị các điểm gần bạn
+        <!-- Tieude & Nut dinh vi -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-[#0e3a30]">Trạm Thu Gom & Tái Chế</h1>
+                <p class="text-sm text-gray-600 mt-1">Tìm kiếm điểm thu gom rác nguy hại, pin cũ, ve chai tái chế gần vị trí của bạn</p>
             </div>
+            <button onclick="locateUser()" class="inline-flex items-center justify-center bg-emerald-600 text-white font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm">
+                <i class="fa-solid fa-crosshairs mr-2"></i> Định vị vị trí của tôi
+            </button>
         </div>
 
-        <!-- Bộ Lọc Loại Rác Thu Gom -->
-        <div class="px-4 py-3 bg-white border-b border-gray-100 flex space-x-2 overflow-x-auto no-scrollbar">
-            <button class="bg-primary text-white text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap">Tất cả</button>
-            <button class="bg-gray-100 text-gray-600 hover:bg-emerald-50 text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap">Pin & Rác điện tử</button>
-            <button class="bg-gray-100 text-gray-600 hover:bg-emerald-50 text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap">Chai nhựa & Vỏ lon</button>
-            <button class="bg-gray-100 text-gray-600 hover:bg-emerald-50 text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap">Giấy & Carton</button>
+        <!-- Khung Bản Đồ & Bộ Lọc -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Map Container (Chiếm 2 cột trên Desktop) -->
+            <div class="lg:col-span-2 bg-white rounded-2xl p-3 shadow-sm border border-emerald-100 relative">
+                <div id="map" class="z-0"></div>
+                <div class="absolute bottom-6 left-6 bg-white/95 backdrop-blur px-3.5 py-2 rounded-full shadow-md text-xs font-semibold text-gray-700 z-[1000] flex items-center">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping mr-2"></span>
+                    Đang hiển thị các điểm thu gom xung quanh
+                </div>
+            </div>
+
+            <!-- Bộ lọc & Danh sách trạm (Cột bên phải Desktop) -->
+            <div class="space-y-4">
+                
+                <!-- Bộ Lọc Loại Rác -->
+                <div class="bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm space-y-2">
+                    <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Lọc theo loại rác tiếp nhận</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="filterMap('all', this)" class="filter-btn bg-[#0e3a30] text-white text-xs px-3 py-1.5 rounded-full font-semibold">Tất cả</button>
+                        <button onclick="filterMap('hazard', this)" class="filter-btn bg-gray-100 text-gray-600 hover:bg-emerald-50 text-xs px-3 py-1.5 rounded-full font-semibold">Pin & Điện tử</button>
+                        <button onclick="filterMap('recycle', this)" class="filter-btn bg-gray-100 text-gray-600 hover:bg-emerald-50 text-xs px-3 py-1.5 rounded-full font-semibold">Chai nhựa & Lon nhôm</button>
+                    </div>
+                </div>
+
+                <!-- Danh Sách Địa Điểm Thu Gom -->
+                <div class="space-y-3 max-h-[320px] overflow-y-auto pr-1">
+                    
+                    <!-- Item 1 -->
+                    <div class="station-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2" data-type="hazard">
+                        <span class="inline-block bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                            <i class="fa-solid fa-battery-half mr-1"></i> Rác Nguy Hại & Pin Cũ
+                        </span>
+                        <h3 class="font-bold text-gray-900 text-base">Điểm Thu Gom Pin Cũ Việt Nam Tái Chế</h3>
+                        <p class="text-xs text-gray-500"><i class="fa-solid fa-location-dot text-gray-400 mr-1"></i> 202 Lý Thường Kiệt, Quận 10, TP.HCM</p>
+                        <div class="flex justify-between items-center pt-1 border-t border-gray-50">
+                            <span class="text-xs text-emerald-600 font-medium"><i class="fa-regular fa-clock mr-1"></i> 08:00 - 17:00 (T2 - T7)</span>
+                            <a href="https://maps.google.com" target="_blank" class="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg font-bold hover:bg-emerald-600 hover:text-white transition">Chỉ đường</a>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="station-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2" data-type="recycle">
+                        <span class="inline-block bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                            <i class="fa-solid fa-recycle mr-1"></i> Chai Nhựa & Lon Kim Loại
+                        </span>
+                        <h3 class="font-bold text-gray-900 text-base">Trạm Tái Chế Ve Chai Công Cộng #04</h3>
+                        <p class="text-xs text-gray-500"><i class="fa-solid fa-location-dot text-gray-400 mr-1"></i> 45 Nguyễn Văn Cừ, Quận 5, TP.HCM</p>
+                        <div class="flex justify-between items-center pt-1 border-t border-gray-50">
+                            <span class="text-xs text-emerald-600 font-medium"><i class="fa-regular fa-clock mr-1"></i> Mở cửa cả ngày</span>
+                            <a href="https://maps.google.com" target="_blank" class="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg font-bold hover:bg-emerald-600 hover:text-white transition">Chỉ đường</a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-
-        <!-- Danh Sách Địa Điểm Thu Gom -->
-        <section class="p-4 space-y-3">
-            <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Danh sách trạm thu gom gần đây</h2>
-
-            <!-- Item 1 -->
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex justify-between items-start">
-                <div class="space-y-1 pr-2">
-                    <span class="inline-block bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                        <i class="fa-solid fa-battery-half mr-1"></i> Nhận Pin Cũ & Điện Tử
-                    </span>
-                    <h3 class="font-bold text-gray-900 text-base">Điểm Thu Gom Pin Cũ Việt Nam Tái Chế</h3>
-                    <p class="text-xs text-gray-500"><i class="fa-solid fa-location-dot text-gray-400 mr-1"></i> 202 Lý Thường Kiệt, Quận 10, TP.HCM</p>
-                    <p class="text-xs text-emerald-600 font-medium"><i class="fa-regular fa-clock mr-1"></i> Mở cửa: 08:00 - 17:00 (Thứ 2 - T7)</p>
-                </div>
-                <a href="https://maps.google.com" target="_blank" class="bg-emerald-50 text-primary p-2.5 rounded-xl hover:bg-primary hover:text-white transition flex-shrink-0 mt-1">
-                    <i class="fa-solid fa-diamond-turn-right text-lg"></i>
-                </a>
-            </div>
-
-            <!-- Item 2 -->
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex justify-between items-start">
-                <div class="space-y-1 pr-2">
-                    <span class="inline-block bg-emerald-100 text-primary text-[10px] font-bold px-2 py-0.5 rounded-md">
-                        <i class="fa-solid fa-recycle mr-1"></i> Thu Gom Nhựa & Kim Loại
-                    </span>
-                    <h3 class="font-bold text-gray-900 text-base">Trạm Tái Chế Ve Chai Công Cộng #04</h3>
-                    <p class="text-xs text-gray-500"><i class="fa-solid fa-location-dot text-gray-400 mr-1"></i> 45 Nguyễn Văn Cừ, Quận 5, TP.HCM</p>
-                    <p class="text-xs text-emerald-600 font-medium"><i class="fa-regular fa-clock mr-1"></i> Mở cửa cả ngày (Có máy tích điểm tự động)</p>
-                </div>
-                <a href="https://maps.google.com" target="_blank" class="bg-emerald-50 text-primary p-2.5 rounded-xl hover:bg-primary hover:text-white transition flex-shrink-0 mt-1">
-                    <i class="fa-solid fa-diamond-turn-right text-lg"></i>
-                </a>
-            </div>
-
-        </section>
 
     </main>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-20">
+    <!-- Footer -->
+    <footer class="bg-[#0e3a30] text-emerald-100 pt-10 pb-6 mt-12 rounded-t-3xl">
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-white/10 text-sm">
+            <div class="space-y-3">
+                <a class="flex items-center space-x-2 font-extrabold text-lg text-white" href="home.html">
+                    <span>Smart Recycle</span>
+                </a>
+                <p class="text-xs text-emerald-200/80 leading-relaxed">Trợ lý AI hỗ trợ người dân phân loại và tái chế rác thải tại nguồn theo Luật Bảo vệ môi trường 2020.</p>
+            </div>
+            <div>
+                <h3 class="text-white font-bold mb-3">Liên kết nhanh</h3>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="home.html" class="hover:text-amber-300 transition"><i class="fa-solid fa-camera mr-1"></i> Quét AI nhận diện</a></li>
+                    <li><a href="history.html" class="hover:text-amber-300 transition"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Lịch sử phân loại</a></li>
+                    <li><a href="map.html" class="hover:text-amber-300 transition"><i class="fa-solid fa-map-location-dot mr-1"></i> Trạm thu gom</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-white font-bold mb-3">4 Nhóm Rác Chính</h3>
+                <ul class="space-y-1.5 text-xs">
+                    <li><span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span> Rác Hữu Cơ</li>
+                    <li><span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1.5"></span> Rác Tái Chế</li>
+                    <li><span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-1.5"></span> Rác Nguy Hại</li>
+                    <li><span class="inline-block w-2 h-2 rounded-full bg-gray-400 mr-1.5"></span> Rác Còn Lại</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-white font-bold mb-3">Thông tin đồ án</h3>
+                <p class="text-xs"><strong>Mô hình AI:</strong> CNN MobileNetV2</p>
+                <p class="text-xs mt-1"><strong>Backend:</strong> Python FastAPI & SQLite</p>
+            </div>
+        </div>
+        <div class="max-w-6xl mx-auto px-4 pt-4 text-center text-xs text-emerald-300/60">
+            © 2026 Smart Recycle Assistant. Phát triển vì môi trường Việt Nam.
+        </div>
+    </footer>
+
+    <!-- Bottom Navigation Mobile -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30">
         <div class="max-w-md mx-auto flex justify-around py-2">
-            <a href="home.html" class="flex flex-col items-center text-gray-400 hover:text-primary">
+            <a href="home.html" class="flex flex-col items-center text-gray-400 hover:text-emerald-600">
                 <i class="fa-solid fa-camera text-lg"></i>
                 <span class="text-[10px] mt-0.5 font-medium">Quét AI</span>
             </a>
-            <a href="history.html" class="flex flex-col items-center text-gray-400 hover:text-primary">
+            <a href="history.html" class="flex flex-col items-center text-gray-400 hover:text-emerald-600">
                 <i class="fa-solid fa-clock-rotate-left text-lg"></i>
                 <span class="text-[10px] mt-0.5 font-medium">Lịch sử</span>
             </a>
-            <a href="map.html" class="flex flex-col items-center text-primary">
+            <a href="map.html" class="flex flex-col items-center text-emerald-600">
                 <i class="fa-solid fa-map-location-dot text-lg"></i>
-                <span class="text-[10px] mt-0.5 font-medium">Điểm gom</span>
+                <span class="text-[10px] mt-0.5 font-medium">Trạm gom</span>
             </a>
-            <a href="login.html" class="flex flex-col items-center text-gray-400 hover:text-primary">
+            <a href="profile.html" class="flex flex-col items-center text-gray-400 hover:text-emerald-600">
                 <i class="fa-solid fa-user text-lg"></i>
                 <span class="text-[10px] mt-0.5 font-medium">Tài khoản</span>
             </a>
         </div>
     </nav>
 
-    <!-- Leaflet JS & Khởi tạo Bản đồ -->
+    <!-- Leaflet JS & Map Script -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Tọa độ mặc định (Ví dụ: TP.HCM)
         const defaultLat = 10.7769;
         const defaultLng = 106.7009;
 
-        // Khởi tạo bản đồ Leaflet
         const map = L.map('map').setView([defaultLat, defaultLng], 13);
 
-        // Nạp OpenStreetMap Tiles (Miễn phí)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Tạo icon ghim vị trí trạm thu gom
         const recycleIcon = L.divIcon({
             html: '<i class="fa-solid fa-location-dot text-emerald-600 text-3xl"></i>',
             className: 'custom-map-icon',
@@ -146,29 +212,41 @@
             iconAnchor: [15, 30]
         });
 
-        // Ghim mẫu các điểm thu gom
         L.marker([10.7626, 106.6602], {icon: recycleIcon}).addTo(map)
             .bindPopup('<b>Điểm Thu Gom Pin Cũ</b><br>202 Lý Thường Kiệt, Q.10');
 
         L.marker([10.7588, 106.6823], {icon: recycleIcon}).addTo(map)
             .bindPopup('<b>Trạm Tái Chế Ve Chai #04</b><br>45 Nguyễn Văn Cừ, Q.5');
 
-        // Hàm định vị người dùng
         function locateUser() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
                     const userLat = position.coords.latitude;
                     const userLng = position.coords.longitude;
                     map.setView([userLat, userLng], 15);
-                    
-                    L.marker([userLat, userLng]).addTo(map)
-                        .bindPopup('<b>Vị trí của bạn</b>').openPopup();
+                    L.marker([userLat, userLng]).addTo(map).bindPopup('<b>Vị trí của bạn</b>').openPopup();
                 }, () => {
                     alert('Không thể lấy vị trí hiện tại của bạn!');
                 });
             } else {
-                alert('Trình duyệt của bạn không hỗ trợ định vị GPS!');
+                alert('Trình duyệt không hỗ trợ định vị GPS!');
             }
+        }
+
+        function filterMap(type, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.className = 'filter-btn bg-gray-100 text-gray-600 hover:bg-emerald-50 text-xs px-3 py-1.5 rounded-full font-semibold';
+            });
+            btn.className = 'filter-btn bg-[#0e3a30] text-white text-xs px-3 py-1.5 rounded-full font-semibold';
+
+            const items = document.querySelectorAll('.station-item');
+            items.forEach(item => {
+                if (type === 'all' || item.dataset.type === type) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
     </script>
 </body>

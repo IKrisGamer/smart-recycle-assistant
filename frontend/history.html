@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<!-- FontAwesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{
@@ -24,15 +25,22 @@ header .wrap{display:flex;justify-content:space-between;align-items:center;heigh
 .logo{display:flex;gap:3px;align-items:flex-end}
 .logo b{width:9px;border-radius:2px 2px 4px 4px}
 nav.main-nav{display:flex;gap:20px;font-size:15px;align-items:center}
-nav.main-nav a{color:#bcd6c9;text-decoration:none;font-weight:500}
+nav.main-nav a{color:#bcd6c9;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:6px;transition:color 0.2s}
 nav.main-nav a:hover, nav.main-nav a.active{color:#fff;font-weight:700}
 nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px;border-radius:999px;font-weight:800}
 
+/* Page Title & Filter Tabs */
+.page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:28px 0 16px}
+.page-title{font-size:1.8rem;font-weight:800;color:var(--deep)}
+.filter-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.tab-btn{background:#fff;border:1px solid #c8d8ce;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all 0.2s}
+.tab-btn.active, .tab-btn:hover{background:var(--deep);color:#fff;border-color:var(--deep)}
+
 /* Cards & List */
-.page-title{margin:28px 0 16px;font-size:1.8rem;font-weight:800;color:var(--deep)}
 .history-list{display:grid;gap:14px;margin-top:10px}
-.card{background:#fff;border-radius:18px;padding:16px;display:flex;align-items:center;gap:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);border:1px solid #dbe6df}
-.card img{width:70px;height:70px;border-radius:12px;object-fit:cover;background:#e2ebe5}
+.card{background:#fff;border-radius:18px;padding:16px;display:flex;align-items:center;gap:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);border:1px solid #dbe6df;transition:transform 0.2s}
+.card:hover{transform:translateY(-2px)}
+.card img{width:70px;height:70px;border-radius:12px;object-fit:cover;background:#e2ebe5;flex-shrink:0}
 .card-info{flex:1}
 .card-info h3{font-size:1.05rem;font-weight:800;color:var(--ink)}
 .card-info p{font-size:13px;color:var(--muted);margin-top:2px}
@@ -43,17 +51,11 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
 .bg-residual{background:var(--residual)}
 .btn-detail{color:var(--deep);font-size:18px;text-decoration:none;padding:8px}
 
-/* Bottom Nav */
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #d1ded6;padding:8px 0;z-index:1000}
-.bottom-nav .nav-container{display:flex;justify-content:space-around;max-width:500px;margin:0 auto}
-.bottom-nav a{display:flex;flex-direction:column;align-items:center;color:#6b7c72;text-decoration:none;font-size:11px;font-weight:600}
-.bottom-nav a.active{color:var(--organic)}
-
 @media(max-width:900px){
   nav.main-nav{display:none}
-  .bottom-nav{display:block}
 }
-/* ================= CSS FOOTER CHUNG ================= */
+
+/* ================= FOOTER CHUNG ================= */
 .site-footer {
   background: var(--deep);
   color: #cfe3d8;
@@ -248,7 +250,6 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
   color: var(--organic);
 }
 
-/* Responsive cho máy tính bảng và điện thoại */
 @media (max-width: 900px) {
   .footer-content {
     grid-template-columns: 1fr 1fr;
@@ -258,7 +259,7 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
     display: block;
   }
   body {
-    padding-bottom: 60px; /* Tránh đè nội dung bởi bottom nav */
+    padding-bottom: 60px;
   }
 }
 
@@ -276,6 +277,7 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
 </head>
 <body>
 
+<!-- Header Top Navigation -->
 <div class="top">
   <header>
     <div class="wrap">
@@ -293,12 +295,23 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
   </header>
 </div>
 
+<!-- Main Content -->
 <main class="wrap">
-  <h1 class="page-title">Lịch sử phân loại</h1>
+  <div class="page-header">
+    <h1 class="page-title">Lịch sử phân loại</h1>
+    <!-- Bộ lọc loại rác nhanh -->
+    <div class="filter-tabs">
+      <button class="tab-btn active" onclick="filterCategory('all', this)">Tất cả</button>
+      <button class="tab-btn" onclick="filterCategory('recycle', this)">Tái chế</button>
+      <button class="tab-btn" onclick="filterCategory('organic', this)">Hữu cơ</button>
+      <button class="tab-btn" onclick="filterCategory('hazard', this)">Nguy hại</button>
+      <button class="tab-btn" onclick="filterCategory('residual', this)">Còn lại</button>
+    </div>
+  </div>
   
-  <div class="history-list">
+  <div class="history-list" id="historyList">
     <!-- Item 1 -->
-    <div class="card">
+    <div class="card" data-group="recycle">
       <img src="https://images.unsplash.com/photo-1528190336454-13cd56b45b5a?w=150" alt="Chai nhựa">
       <div class="card-info">
         <h3>Chai Nhựa PET</h3>
@@ -309,7 +322,7 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
     </div>
 
     <!-- Item 2 -->
-    <div class="card">
+    <div class="card" data-group="recycle">
       <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=150" alt="Vỏ lon">
       <div class="card-info">
         <h3>Lon Nhôm Bia</h3>
@@ -320,7 +333,7 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
     </div>
 
     <!-- Item 3 -->
-    <div class="card">
+    <div class="card" data-group="hazard">
       <img src="https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=150" alt="Pin cũ">
       <div class="card-info">
         <h3>Pin Tiểu AA Cũ</h3>
@@ -332,19 +345,9 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
   </div>
 </main>
 
-<nav class="bottom-nav">
-  <div class="nav-container">
-    <a href="home.html"><i class="fa-solid fa-camera"></i><span>Quét AI</span></a>
-    <a href="history.html" class="active"><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a>
-    <a href="map.html"><i class="fa-solid fa-map-location-dot"></i><span>Điểm gom</span></a>
-    <a href="profile.html"><i class="fa-solid fa-user"></i><span>Tài khoản</span></a>
-  </div>
-</nav>
-<!-- ================= FOOTER CHUNG CHO TOÀN BỘ CÁC TRANG ================= -->
+<!-- Footer -->
 <footer class="site-footer">
   <div class="wrap footer-content">
-    
-    <!-- Cột 1: Thương hiệu & Giới thiệu -->
     <div class="f-col f-brand">
       <a class="brand" href="home.html">
         <span class="logo" aria-hidden="true">
@@ -360,11 +363,10 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
       </p>
       <div class="f-badges">
         <span class="f-tag"><i class="fa-solid fa-leaf"></i> Phân loại chuẩn</span>
-        <span class="f-tag"><i class="fa-solid fa-bolt"></i> Phản hồi < 3s</span>
+        <span class="f-tag"><i class="fa-solid fa-bolt"></i> Phản hồi &lt; 3s</span>
       </div>
     </div>
 
-    <!-- Cột 2: Điều hướng nhanh -->
     <div class="f-col">
       <h3 class="f-title">Liên kết nhanh</h3>
       <ul class="f-links">
@@ -375,7 +377,6 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
       </ul>
     </div>
 
-    <!-- Cột 3: Hướng dẫn & Quy định -->
     <div class="f-col">
       <h3 class="f-title">4 Nhóm Rác Chính</h3>
       <ul class="f-groups">
@@ -386,21 +387,18 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
       </ul>
     </div>
 
-    <!-- Cột 4: Thông tin Đồ án & Liên hệ -->
     <div class="f-col">
       <h3 class="f-title">Thông tin đồ án</h3>
       <p class="f-info"><strong>Đồ án 4:</strong> Smart Recycle Assistant</p>
       <p class="f-info"><strong>Mô hình:</strong> CNN MobileNetV2 / EfficientNet</p>
-      <p class="f-info"><strong>Backend:</strong> FastAPI & SQLite</p>
+      <p class="f-info"><strong>Backend:</strong> FastAPI &amp; SQLite</p>
       <div class="f-social">
         <a href="https://github.com" target="_blank" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
         <a href="home.html#cong-nghe" aria-label="Tài liệu công nghệ"><i class="fa-solid fa-code"></i></a>
       </div>
     </div>
-
   </div>
 
-  <!-- Thanh bản quyền bên dưới -->
   <div class="f-bottom">
     <div class="wrap f-bottom-wrap">
       <p>© 2026 Smart Recycle Assistant. Tất cả quyền được bảo lưu.</p>
@@ -409,14 +407,14 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
   </div>
 </footer>
 
-<!-- Thanh điều hướng đáy màn hình dành riêng cho Mobile (Bottom Navigation) -->
+<!-- Bottom Navigation for Mobile -->
 <nav class="bottom-nav-mobile" aria-label="Điều hướng điện thoại">
   <div class="b-nav-container">
     <a href="home.html" class="b-item" id="nav-home">
       <i class="fa-solid fa-camera"></i>
       <span>Quét AI</span>
     </a>
-    <a href="history.html" class="b-item" id="nav-history">
+    <a href="history.html" class="b-item active" id="nav-history">
       <i class="fa-solid fa-clock-rotate-left"></i>
       <span>Lịch sử</span>
     </a>
@@ -430,13 +428,22 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
     </a>
   </div>
 </nav>
+
 <script>
-  // Tự động kiểm tra file HTML hiện tại để tô màu active cho Bottom Nav
-  const page = window.location.pathname.split("/").pop() || "home.html";
-  if (page.includes("home")) document.getElementById("nav-home")?.classList.add("active");
-  if (page.includes("history")) document.getElementById("nav-history")?.classList.add("active");
-  if (page.includes("map")) document.getElementById("nav-map")?.classList.add("active");
-  if (page.includes("profile")) document.getElementById("nav-profile")?.classList.add("active");
+  // Hàm lọc nhanh rác thải theo danh mục
+  function filterCategory(group, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cards = document.querySelectorAll('.history-list .card');
+    cards.forEach(card => {
+      if (group === 'all' || card.dataset.group === group) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
 </script>
 </body>
 </html>
