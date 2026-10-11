@@ -577,21 +577,41 @@ function show(key,conf,demo){
   else if(demo){n.hidden=false;n.textContent="Chưa kết nối backend nên đây là kết quả mẫu để minh họa giao diện."}
 }
 
-$("go").addEventListener("click",async()=>{
-  if(!currentFile)return;
-  $("go").disabled=true;$("go").textContent="Đang phân tích...";
-  try{
-    /* Backend FastAPI: POST /api/predict, field "file",
-       trả về {"label":"plastic","confidence":0.92} */
-    const fd=new FormData();fd.append("file",currentFile);
-    const r=await fetch("/api/predict",{method:"POST",body:fd});
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const d=await r.json();show(d.label,d.confidence,false);
-  }catch(err){
-    const k=Object.keys(CLASSES);
-    show(k[Math.floor(Math.random()*k.length)],0.8+Math.random()*0.15,true);
+// Thu nhỏ ảnh để lưu được vào sessionStorage/localStorage
+function toDataURL(file, max = 480) {
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = img.width * s; c.height = img.height * s;
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      res(c.toDataURL("image/jpeg", 0.8));
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+$("go").addEventListener("click", async () => {
+  if (!currentFile) return;
+  $("go").disabled = true; $("go").textContent = "Đang phân tích...";
+  let label, confidence, demo = false;
+  try {
+    const fd = new FormData(); fd.append("file", currentFile);
+    const r = await fetch("/api/predict", { method: "POST", body: fd });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    ({ label, confidence } = await r.json());
+  } catch (err) {
+    const k = Object.keys(CLASSES);
+    label = k[Math.floor(Math.random() * k.length)];
+    confidence = 0.8 + Math.random() * 0.15;
+    demo = true;
   }
-  $("go").disabled=false;$("go").textContent="Phân loại ảnh này";
+  const image = await toDataURL(currentFile);
+  sessionStorage.setItem("scanResult", JSON.stringify({
+    label, confidence, demo, image, time: Date.now()
+  }));
+  location.href = "result.html";
 });
 
 </script>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kết quả phân loại - Smart Recycle Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --deep:#0e3a30; --deep2:#14493d; --mint:#e6f1e8; --ink:#10231d; --muted:#4d6258; --sun:#f6c733;
+  --organic:#2e7d46; --recycle:#2a6fdb; --hazard:#d23c27; --residual:#5b6672;
+  --c:#2e7d46;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:"Be Vietnam Pro",system-ui,sans-serif;background:var(--mint);color:var(--ink);line-height:1.6}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+/* Header */
+.top{background:var(--deep);color:#fff;border-radius:0 0 30px 30px;padding-bottom:20px}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:68px}
+.brand{font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+.logo{display:flex;gap:3px;align-items:flex-end}
+.logo b{width:9px;border-radius:2px 2px 4px 4px}
+nav.main-nav{display:flex;gap:20px;font-size:15px;align-items:center}
+nav.main-nav a{color:#bcd6c9;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:6px}
+nav.main-nav a:hover,nav.main-nav a.active{color:#fff;font-weight:700}
+nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px;border-radius:999px;font-weight:800}
+
+/* Page */
+.crumb{display:flex;align-items:center;gap:10px;margin:26px 0 6px;font-size:14px;color:var(--muted)}
+.crumb a{color:var(--deep);font-weight:700;text-decoration:none}
+.page-title{font-size:clamp(1.6rem,3.4vw,2.2rem);font-weight:800;color:var(--deep);letter-spacing:-.02em;line-height:1.2}
+.layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:24px;margin-top:20px;align-items:start}
+.panel{background:#fff;border-radius:22px;padding:18px;box-shadow:0 4px 12px rgba(0,0,0,.04);border:1px solid #dbe6df}
+
+/* Photo */
+.photo{position:relative;border-radius:16px;overflow:hidden;background:#d9e6dd;aspect-ratio:4/3;display:grid;place-items:center}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo .empty{color:var(--muted);font-size:14px;text-align:center;padding:20px}
+.photo .empty i{font-size:34px;display:block;margin-bottom:8px}
+.photo-meta{display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+
+/* Result head */
+.rhead{background:var(--c);color:#fff;border-radius:16px;padding:18px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;transition:background .3s}
+.rhead small{opacity:.92;font-size:13px}
+.rhead h2{font-size:1.5rem;line-height:1.25;font-weight:800;margin:2px 0 8px}
+.gbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.2);padding:4px 12px;border-radius:999px;font-weight:700;font-size:13.5px}
+.conf{min-width:150px}
+.meter{height:8px;background:rgba(255,255,255,.35);border-radius:4px;margin-top:6px;overflow:hidden}
+.meter div{height:100%;background:#fff;border-radius:4px;width:0;transition:width .8s ease}
+.conf b{font-size:1.6rem;font-weight:900}
+
+.alert{margin-top:14px;border-radius:14px;padding:12px 14px;font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.alert[hidden]{display:none}
+.alert.warn{background:#fff6d6;border:1px solid #ecd36a;color:#5e4b00}
+.alert.danger{background:#fde6e2;border:1px solid #efb3a9;color:#7a1f12}
+.alert.info{background:#e4eefb;border:1px solid #b9d0f0;color:#173f7a}
+.alert i{margin-top:3px}
+
+.steps{display:grid;gap:12px;margin-top:14px}
+.info{border-radius:14px;background:var(--mint);padding:14px 16px;display:flex;gap:14px}
+.info .ic{flex:none;width:38px;height:38px;border-radius:50%;background:var(--deep);color:#fff;display:grid;place-items:center;font-size:15px}
+.info h3{font-size:1rem;font-weight:800;margin-bottom:2px}
+.info p{font-size:14.5px;color:var(--muted)}
+
+/* Bins */
+.bins{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.bin{position:relative;padding-top:16px;opacity:.45;transition:opacity .3s,transform .3s}
+.bin.open{opacity:1}
+.lid{position:absolute;top:4px;left:-3px;right:-3px;height:13px;background:var(--bc);filter:brightness(.82);border-radius:8px 8px 2px 2px;transform-origin:left bottom;transition:transform .45s cubic-bezier(.3,1.4,.5,1);z-index:3}
+.bin.open .lid{transform:rotate(-22deg) translateY(-4px)}
+.bbody{position:relative;z-index:2;background:var(--bc);color:#fff;padding:12px 8px 20px;clip-path:polygon(0 0,100% 0,93% 100%,7% 100%);text-align:center;font-size:12.5px;font-weight:700;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.bbody i{font-size:20px}
+.bin.open .bbody{transform:translateY(-4px)}
+.token{position:absolute;left:50%;top:-24px;width:22px;height:22px;border-radius:50%;background:var(--sun);opacity:0;z-index:1}
+.bin.hit .token{animation:fall 1s ease-in .2s forwards}
+@keyframes fall{0%{transform:translate(-50%,-40px);opacity:1}75%{opacity:1}100%{transform:translate(-50%,70px) scale(.6);opacity:0}}
+
+/* Correction */
+.fix{margin-top:14px}
+.fix summary{cursor:pointer;font-weight:800;color:var(--deep);list-style:none;display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;background:#fff;border:2px solid #cfdad2}
+.fix summary::-webkit-details-marker{display:none}
+.fix[open] summary{border-color:var(--deep)}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.choice{display:flex;align-items:center;gap:10px;text-align:left;background:#fff;border:2px solid #d3dfd7;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;color:var(--ink);transition:border-color .15s,transform .15s}
+.choice:hover{border-color:var(--cc);transform:translateY(-1px)}
+.choice .d{flex:none;width:12px;height:12px;border-radius:50%;background:var(--cc)}
+.choice.sel{border-color:var(--cc);background:color-mix(in srgb,var(--cc) 10%,#fff)}
+.choice small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+
+/* Actions */
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{font:inherit;font-weight:800;border-radius:12px;padding:13px 20px;border:0;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:15px;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn-main{background:var(--sun);color:var(--ink);flex:1}
+.btn-alt{background:var(--deep);color:#fff}
+.btn-ghost{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 2px #cfdad2}
+.btn-haz{background:var(--hazard);color:#fff;flex:1}
+
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:var(--deep);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:2000}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* Chú thích thùng, xác nhận sửa, nút sắp ra mắt */
+.bins-cap{margin-top:18px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.bins-cap i{color:var(--deep)}
+.bins{pointer-events:none;user-select:none}
+.rhead .orig{font-size:12.5px;opacity:.95;margin-top:8px;line-height:1.4}
+.rhead .orig[hidden]{display:none}
+.fix-hint{font-size:13.5px;color:var(--muted);margin-top:12px}
+.choice{position:relative}
+.choice.isai::after{content:"AI dự đoán";position:absolute;top:-9px;right:10px;background:var(--deep);color:#fff;font-size:10.5px;font-weight:700;padding:1px 8px;border-radius:999px}
+.choice.sel::before{content:"\f00c";font-family:"Font Awesome 6 Free";font-weight:900;position:absolute;right:12px;bottom:8px;color:var(--cc);font-size:13px}
+.choice.pending{border-style:dashed;border-color:var(--cc);background:color-mix(in srgb,var(--cc) 14%,#fff)}
+.confirm{margin-top:12px;border-radius:14px;background:#fff6d6;border:1px solid #ecd36a;padding:12px 14px;font-size:14.5px;color:#5e4b00}
+.confirm[hidden]{display:none}
+.confirm .row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.confirm .btn{padding:9px 16px;font-size:14px}
+.btn-ok{background:var(--deep);color:#fff}
+.btn-soon{position:relative;background:#e4e8e4;color:#6b7c72;cursor:pointer;flex:1}
+.btn-soon[hidden]{display:none}
+.btn-soon:hover{transform:none}
+.btn-soon .soon{background:var(--sun);color:var(--ink);font-size:11px;font-weight:800;padding:1px 8px;border-radius:999px}
+
+/* Footer */
+.site-footer{background:var(--deep);color:#cfe3d8;padding-top:54px;margin-top:60px;border-radius:36px 36px 0 0;font-size:14px}
+.footer-content{display:grid;grid-template-columns:1.2fr .9fr .9fr 1fr;gap:36px;padding-bottom:40px}
+.f-col .brand{font-size:1.2rem;margin-bottom:12px}
+.f-desc{font-size:13.5px;color:#b3cdc0;margin-bottom:16px}
+.f-badges{display:flex;flex-wrap:wrap;gap:8px}
+.f-tag{background:var(--deep2);color:#d1e7dc;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.f-title{color:#fff;font-size:1rem;font-weight:800;margin-bottom:16px}
+.f-links,.f-groups{list-style:none;padding:0;display:grid;gap:10px}
+.f-groups{gap:8px;font-size:13.5px}
+.f-links a{color:#cfe3d8;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:color .2s,transform .2s}
+.f-links a:hover{color:var(--sun);transform:translateX(3px)}
+.f-groups li{display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.dot.organic{background:var(--organic)}.dot.recycle{background:var(--recycle)}.dot.hazard{background:var(--hazard)}.dot.residual{background:var(--residual)}
+.f-info{margin-bottom:6px;font-size:13.5px}
+.f-social{display:flex;gap:12px;margin-top:14px}
+.f-social a{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--deep2);color:#fff;text-decoration:none;transition:background .2s,transform .2s}
+.f-social a:hover{background:var(--sun);color:var(--ink);transform:translateY(-2px)}
+.f-bottom{border-top:1px solid rgba(255,255,255,.08);padding:18px 0;font-size:12.5px;color:#8faea0}
+.f-bottom-wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+
+/* Mobile bottom nav */
+.bottom-nav-mobile{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #d4e3d9;padding:6px 0 8px;z-index:1000;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+.b-nav-container{display:flex;justify-content:space-around;align-items:center;max-width:480px;margin:0 auto}
+.b-item{display:flex;flex-direction:column;align-items:center;color:#5c7267;text-decoration:none;font-size:11px;font-weight:600}
+.b-item i{font-size:18px;margin-bottom:2px}
+.b-item.active,.b-item:hover{color:var(--organic)}
+
+@media(max-width:900px){
+  nav.main-nav{display:none}
+  .bottom-nav-mobile{display:block}
+  body{padding-bottom:60px}
+  .layout{grid-template-columns:1fr}
+  .footer-content{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media(max-width:520px){
+  .footer-content{grid-template-columns:1fr;gap:24px}
+  .f-bottom-wrap{flex-direction:column;text-align:center}
+  .bins{gap:8px}
+  .bbody{font-size:11.5px;padding:10px 4px 18px}
+  .choices{grid-template-columns:1fr}
+  .btn{width:100%}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <header>
+    <div class="wrap">
+      <a class="brand" href="home.html">
+        <span class="logo" aria-hidden="true"><b style="height:12px;background:#5fc27a"></b><b style="height:18px;background:#5b9bf5"></b><b style="height:15px;background:#f2735f"></b><b style="height:21px;background:#9aa6b2"></b></span>Smart Recycle
+      </a>
+      <nav class="main-nav" aria-label="Điều hướng chính">
+        <a href="home.html" class="active"><i class="fa-solid fa-camera"></i> Quét AI</a>
+        <a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử</a>
+        <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> Trạm thu gom</a>
+        <a href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản</a>
+        <a href="login.html" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
+      </nav>
+    </div>
+  </header>
+</div>
+
+<main class="wrap">
+  <div class="crumb"><a href="home.html"><i class="fa-solid fa-arrow-left"></i> Quét ảnh khác</a><span>/</span><span>Kết quả</span></div>
+  <h1 class="page-title">Kết quả phân loại</h1>
+
+  <div class="layout">
+    <!-- Cột trái: ảnh -->
+    <div class="panel">
+      <div class="photo" id="photo">
+        <div class="empty"><i class="fa-regular fa-image"></i>Không có ảnh để hiển thị</div>
+      </div>
+      <div class="photo-meta">
+        <span><i class="fa-regular fa-clock"></i> <span id="mTime">--</span></span>
+        <span id="mSrc"></span>
+      </div>
+      <p class="bins-cap"><i class="fa-solid fa-circle-info"></i> Thùng phù hợp với món này. Phần này chỉ để xem, muốn đổi kết quả hãy dùng mục "Kết quả sai?" bên phải.</p>
+      <div class="bins" id="bins" aria-label="Thùng phù hợp với món rác này (chỉ hiển thị)" role="img"></div>
+    </div>
+
+    <!-- Cột phải: kết quả -->
+    <div>
+      <div class="panel" aria-live="polite">
+        <div class="rhead" id="rhead">
+          <div>
+            <small>AI nhận diện đây là</small>
+            <h2 id="rName">--</h2>
+            <span class="gbadge" id="rGroup"><i class="fa-solid fa-trash-can"></i> --</span>
+          </div>
+          <div class="conf">
+            <small>Độ tin cậy (do AI dự đoán)</small><br>
+            <b id="rConf">0%</b>
+            <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="rMeter"><div id="rBar"></div></div>
+            <p class="orig" id="rOrig" hidden></p>
+          </div>
+        </div>
+
+        <div class="alert warn" id="aLow" hidden><i class="fa-solid fa-triangle-exclamation"></i><div><b>AI chưa chắc chắn.</b> Hãy chụp lại gần hơn, đủ sáng hơn, hoặc chọn đúng loại rác bên dưới.</div></div>
+        <div class="alert danger" id="aHaz" hidden><i class="fa-solid fa-skull-crossbones"></i><div><b>Rác nguy hại.</b> Không bỏ chung rác sinh hoạt. Hãy mang đến điểm thu gom chuyên dụng.</div></div>
+        <div class="alert info" id="aDemo" hidden><i class="fa-solid fa-circle-info"></i><div>Chưa kết nối backend nên đây là kết quả mẫu để minh họa giao diện.</div></div>
+        <div class="alert info" id="aFixed" hidden><i class="fa-solid fa-circle-check"></i><div>Bạn đã chỉnh lại loại rác. Kết quả đã được cập nhật vào lịch sử.</div></div>
+
+        <div class="steps">
+          <div class="info"><div class="ic"><i class="fa-solid fa-broom"></i></div><div><h3>Cách xử lý</h3><p id="rHow">--</p></div></div>
+          <div class="info"><div class="ic"><i class="fa-solid fa-recycle"></i></div><div><h3>Tái chế / tái sử dụng</h3><p id="rIdea">--</p></div></div>
+        </div>
+
+        <details class="fix" id="fix">
+          <summary><i class="fa-solid fa-pen"></i> Kết quả sai? Chọn lại loại rác</summary>
+          <p class="fix-hint">Chọn loại đúng với món rác của bạn. Bạn sẽ được hỏi xác nhận trước khi lịch sử được cập nhật.</p>
+          <div class="choices" id="choices"></div>
+          <div class="confirm" id="confirm" hidden role="alertdialog" aria-live="assertive">
+            <div id="confirmText"></div>
+            <div class="row">
+              <button type="button" class="btn btn-ok" id="confirmYes"><i class="fa-solid fa-check"></i> Xác nhận đổi</button>
+              <button type="button" class="btn btn-ghost" id="confirmNo">Hủy</button>
+            </div>
+          </div>
+        </details>
+
+        <div class="actions">
+          <a href="home.html" class="btn btn-main"><i class="fa-solid fa-camera"></i> Quét ảnh khác</a>
+          <button type="button" class="btn btn-soon" id="btnMap" hidden><i class="fa-solid fa-map-location-dot"></i> Tìm điểm thu gom <span class="soon">Sắp có</span></button>
+          <a href="history.html" class="btn btn-alt"><i class="fa-solid fa-clock-rotate-left"></i> Xem lịch sử</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-content">
+    <div class="f-col f-brand">
+      <a class="brand" href="home.html">
+        <span class="logo" aria-hidden="true"><b style="height:12px;background:#5fc27a"></b><b style="height:18px;background:#5b9bf5"></b><b style="height:15px;background:#f2735f"></b><b style="height:21px;background:#9aa6b2"></b></span>Smart Recycle
+      </a>
+      <p class="f-desc">Trợ lý AI thông minh hỗ trợ người dân phân loại và tái chế rác thải tại nguồn theo Luật Bảo vệ môi trường.</p>
+      <div class="f-badges">
+        <span class="f-tag"><i class="fa-solid fa-leaf"></i> Phân loại chuẩn</span>
+        <span class="f-tag"><i class="fa-solid fa-bolt"></i> Phản hồi &lt; 3s</span>
+      </div>
+    </div>
+    <div class="f-col">
+      <h3 class="f-title">Liên kết nhanh</h3>
+      <ul class="f-links">
+        <li><a href="home.html"><i class="fa-solid fa-camera"></i> Quét AI nhận diện</a></li>
+        <li><a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử phân loại</a></li>
+        <li><a href="map.html"><i class="fa-solid fa-map-location-dot"></i> Bản đồ trạm thu gom</a></li>
+        <li><a href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản cá nhân</a></li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h3 class="f-title">4 Nhóm Rác Chính</h3>
+      <ul class="f-groups">
+        <li><span class="dot organic"></span> Rác Hữu Cơ</li>
+        <li><span class="dot recycle"></span> Rác Tái Chế</li>
+        <li><span class="dot hazard"></span> Rác Nguy Hại</li>
+        <li><span class="dot residual"></span> Rác Còn Lại</li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h3 class="f-title">Thông tin đồ án</h3>
+      <p class="f-info"><strong>Đồ án 4:</strong> Smart Recycle Assistant</p>
+      <p class="f-info"><strong>Mô hình:</strong> CNN MobileNetV2 / EfficientNet</p>
+      <p class="f-info"><strong>Backend:</strong> FastAPI &amp; SQLite</p>
+      <div class="f-social">
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
+        <a href="home.html#cong-nghe" aria-label="Tài liệu công nghệ"><i class="fa-solid fa-code"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <div class="wrap f-bottom-wrap">
+      <p>© 2026 Smart Recycle Assistant. Tất cả quyền được bảo lưu.</p>
+      <p>Phát triển vì mục tiêu Môi Trường Xanh - Việt Nam</p>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<nav class="bottom-nav-mobile" aria-label="Điều hướng điện thoại">
+  <div class="b-nav-container">
+    <a href="home.html" class="b-item active"><i class="fa-solid fa-camera"></i><span>Quét AI</span></a>
+    <a href="history.html" class="b-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a>
+    <a href="map.html" class="b-item"><i class="fa-solid fa-map-location-dot"></i><span>Điểm gom</span></a>
+    <a href="profile.html" class="b-item"><i class="fa-solid fa-user"></i><span>Tài khoản</span></a>
+  </div>
+</nav>
+
+<script>
+/* Bảng tri thức: giống home.html (sau này lấy từ backend / SQLite) */
+const GROUPS={
+  organic:{name:"Hữu cơ",color:"#2e7d46",icon:"fa-leaf"},
+  recycle:{name:"Tái chế",color:"#2a6fdb",icon:"fa-recycle"},
+  hazard:{name:"Nguy hại",color:"#d23c27",icon:"fa-triangle-exclamation"},
+  residual:{name:"Rác còn lại",color:"#5b6672",icon:"fa-trash"}
+};
+const CLASSES={
+  plastic:{name:"Chai nhựa / hộp nhựa",g:"recycle",how:"Đổ hết nước, tráng sơ, bỏ nắp và nhãn nếu được, ép dẹp rồi bỏ vào thùng tái chế.",idea:"Cắt đáy chai làm chậu trồng rau mầm hoặc ống đựng bút."},
+  metal:{name:"Lon kim loại",g:"recycle",how:"Đổ sạch bên trong, tráng nước, ép dẹp rồi bỏ vào thùng tái chế.",idea:"Làm hộp đựng đồ dùng văn phòng hoặc chậu cây nhỏ."},
+  paper:{name:"Giấy / bìa carton",g:"recycle",how:"Giữ khô, gỡ băng keo, gấp phẳng. Giấy dính dầu mỡ hoặc ướt thì bỏ vào rác còn lại.",idea:"Dùng làm hộp lưu trữ, giấy nháp hoặc lót luống rau."},
+  glass:{name:"Thủy tinh",g:"recycle",how:"Tráng sạch, bỏ nắp. Gói mảnh vỡ trong giấy dày và ghi chú để người thu gom biết.",idea:"Chai lọ dùng lại để đựng gia vị, nến thơm hoặc bình hoa."},
+  food:{name:"Rác thực phẩm",g:"organic",how:"Để ráo nước, bỏ vào thùng riêng, không lẫn túi nilon hay xương cứng lớn.",idea:"Ủ phân hữu cơ bón cây hoặc làm enzyme rửa sàn từ vỏ trái cây."},
+  hazard:{name:"Pin / bóng đèn / điện tử nhỏ",g:"hazard",how:"Không bỏ chung rác sinh hoạt. Gom riêng vào hộp kín và mang đến điểm thu gom rác nguy hại.",idea:"Không tái sử dụng tại nhà. Ưu tiên điểm thu hồi của cửa hàng hoặc địa phương."},
+  soft:{name:"Túi nilon / hộp xốp / ly trà sữa",g:"residual",how:"Làm sạch phần thức ăn, thức uống bên trong rồi bỏ vào thùng rác còn lại. Ly nhựa sạch có thể tách riêng.",idea:"Tái sử dụng túi nilon sạch nhiều lần, hạn chế mua mới."},
+  other:{name:"Rác khác",g:"residual",how:"Những món không thuộc các nhóm trên, bỏ vào thùng rác còn lại.",idea:"Xem lại có thể sửa hoặc tặng lại không trước khi bỏ."}
+};
+const LOW_CONF=0.6;
+const HKEY="scanHistory", SKEY="scanResult";
+const $=id=>document.getElementById(id);
+
+/* ---------- Lưu trữ ---------- */
+function readHistory(){try{return JSON.parse(localStorage.getItem(HKEY))||[]}catch(e){return[]}}
+function writeHistory(list){
+  try{localStorage.setItem(HKEY,JSON.stringify(list.slice(0,50)))}
+  catch(e){ /* đầy bộ nhớ: bỏ ảnh của các mục cũ rồi thử lại */
+    try{localStorage.setItem(HKEY,JSON.stringify(list.slice(0,50).map((x,i)=>i?{...x,image:""}:x)))}catch(_){}
+  }
+}
+function loadRecord(){
+  const id=new URLSearchParams(location.search).get("id");
+  if(id){const r=readHistory().find(x=>String(x.id)===id);if(r)return {rec:r,saved:true};}
+  try{
+    const s=JSON.parse(sessionStorage.getItem(SKEY));
+    if(s&&s.label)return {rec:s,saved:false};
+  }catch(e){}
+  return null;
+}
+
+let rec=null;
+
+/* ---------- Dựng giao diện ---------- */
+function buildBins(){
+  $("bins").innerHTML=Object.entries(GROUPS).map(([k,g])=>
+    `<div class="bin" id="bin-${k}" style="--bc:${g.color}"><i class="token"></i><div class="lid"></div><div class="bbody"><i class="fa-solid ${g.icon}"></i>${g.name}</div></div>`
+  ).join("");
+}
+function buildChoices(){
+  $("choices").innerHTML=Object.entries(CLASSES).map(([k,c])=>
+    `<button type="button" class="choice" data-k="${k}" style="--cc:${GROUPS[c.g].color}"><span class="d"></span><span>${c.name}<small>Nhóm ${GROUPS[c.g].name}</small></span></button>`
+  ).join("");
+  $("choices").addEventListener("click",e=>{
+    const b=e.target.closest(".choice");if(!b)return;
+    askChange(b.dataset.k);
+  });
+  $("confirmYes").addEventListener("click",applyChange);
+  $("confirmNo").addEventListener("click",cancelChange);
+}
+function render(animate){
+  const key=CLASSES[rec.label]?rec.label:"other";
+  const c=CLASSES[key],g=GROUPS[c.g];
+  /* Độ tin cậy luôn là số % do mô hình AI trả về, kể cả sau khi người dùng chỉnh lại */
+  const conf=Math.max(0,Math.min(1,Number(rec.confidence)||0));
+  document.documentElement.style.setProperty("--c",g.color);
+  $("rName").textContent=c.name;
+  $("rGroup").innerHTML=`<i class="fa-solid ${g.icon}"></i> Nhóm ${g.name}`;
+  const pct=Math.round(conf*100);
+  $("rConf").textContent=pct+"%";
+  $("rMeter").setAttribute("aria-valuenow",pct);
+  requestAnimationFrame(()=>{$("rBar").style.width=pct+"%"});
+  const orig=rec.corrected&&CLASSES[rec.original];
+  $("rOrig").hidden=!orig;
+  if(orig)$("rOrig").textContent="AI dự đoán: "+CLASSES[rec.original].name+" ("+pct+"%). Bạn đã chỉnh sang loại này.";
+  $("rHow").textContent=c.how;
+  $("rIdea").textContent=c.idea;
+
+  $("aLow").hidden=!(conf<LOW_CONF&&!rec.corrected);
+  $("aHaz").hidden=c.g!=="hazard";
+  $("aDemo").hidden=!rec.demo;
+  $("aFixed").hidden=!rec.corrected;
+  $("btnMap").hidden=c.g!=="hazard";
+  if(conf<LOW_CONF&&!rec.corrected)$("fix").open=true;
+
+  const aiKey=rec.original||key;
+  document.querySelectorAll(".choice").forEach(b=>{
+    b.classList.toggle("sel",b.dataset.k===key);
+    b.classList.toggle("isai",b.dataset.k===aiKey);
+    b.classList.toggle("pending",b.dataset.k===pending);
+    b.setAttribute("aria-pressed",b.dataset.k===key);
+  });
+  document.querySelectorAll(".bin").forEach(b=>b.classList.remove("open","hit"));
+  const bin=$("bin-"+c.g);bin.classList.add("open");
+  if(animate){void bin.offsetWidth;bin.classList.add("hit")}
+
+  const t=new Date(rec.time||Date.now());
+  $("mTime").textContent=t.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})+" - "+t.toLocaleDateString("vi-VN");
+  $("mSrc").textContent=rec.demo?"Kết quả mẫu":"";
+  document.title=c.name+" - Smart Recycle Assistant";
+}
+function renderPhoto(){
+  if(!rec.image)return;
+  const img=new Image();img.alt="Ảnh rác bạn đã chụp";img.src=rec.image;
+  $("photo").replaceChildren(img);
+}
+
+/* ---------- Hành động ---------- */
+function toast(msg){
+  const t=$("toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("show"),2400);
+}
+function saveToHistory(){
+  const list=readHistory();
+  const i=list.findIndex(x=>x.id===rec.id);
+  if(i>=0)list[i]=rec;else list.unshift(rec);
+  writeHistory(list);
+}
+/* Bước 1: người dùng chọn loại khác, chưa lưu, chỉ hỏi xác nhận */
+let pending=null;
+function askChange(k){
+  if(k===rec.label){cancelChange();return}
+  pending=k;
+  $("confirmText").innerHTML=`Đổi kết quả từ <b>${CLASSES[rec.label].name}</b> sang <b>${CLASSES[k].name}</b>? Lịch sử quét sẽ được cập nhật.`;
+  $("confirm").hidden=false;
+  document.querySelectorAll(".choice").forEach(b=>b.classList.toggle("pending",b.dataset.k===k));
+  $("confirmYes").focus();
+}
+function cancelChange(){
+  pending=null;$("confirm").hidden=true;
+  document.querySelectorAll(".choice").forEach(b=>b.classList.remove("pending"));
+}
+/* Bước 2: người dùng bấm "Xác nhận đổi" thì mới ghi vào lịch sử */
+function applyChange(){
+  const k=pending;if(!k)return;
+  rec.original=rec.original||rec.label;
+  rec.label=k;
+  if(k===rec.original){rec.corrected=false;delete rec.original}   /* đổi lại đúng dự đoán của AI */
+  else rec.corrected=true;
+  cancelChange();
+  saveToHistory();
+  render(true);
+  /* Backend sau này: fetch("/api/feedback",{method:"POST",headers:{"Content-Type":"application/json"},
+       body:JSON.stringify({id:rec.id,label:k})}) */
+  toast("Đã cập nhật: "+CLASSES[k].name);
+  $("fix").open=false;
+}
+
+/* Nút "Tìm điểm thu gom": chưa có dữ liệu bản đồ nên chỉ báo "sắp có".
+   Khi map.html xong, đổi MAP_READY = true */
+const MAP_READY=false;
+$("btnMap").addEventListener("click",()=>{
+  if(MAP_READY)location.href="map.html";
+  else toast("Tính năng bản đồ điểm thu gom đang được phát triển");
+});
+
+/* ---------- Khởi động ---------- */
+buildBins();buildChoices();
+const loaded=loadRecord();
+if(!loaded){
+  /* Mở trực tiếp trang này (chưa quét ảnh): dùng dữ liệu mẫu để xem giao diện */
+  rec={id:"demo",label:"plastic",confidence:.92,image:"",demo:true,time:Date.now()};
+  render(true);
+}else{
+  rec=loaded.rec;
+  if(!rec.id)rec.id=Date.now().toString(36);
+  if(!rec.time)rec.time=Date.now();
+  renderPhoto();render(!loaded.saved);
+  if(!loaded.saved){
+    saveToHistory();                      /* lưu 1 lần, tránh nhân đôi khi tải lại trang */
+    sessionStorage.setItem(SKEY,JSON.stringify(rec));
+    history.replaceState(null,"","result.html?id="+encodeURIComponent(rec.id));
+  }
+}
+</script>
+</body>
+</html>
