@@ -1,0 +1,173 @@
+# Định dạng API – Smart Recycle Assistant
+
+Bản nháp ngày 14/11/2026, do C soạn. Mục nào ghi **(đề xuất)** là chưa được cả nhóm chốt.
+A và B điền phần của mình, sửa xong thì báo trong nhóm.
+
+## Quy ước chung
+
+- Địa chỉ khi chạy trên máy: `http://localhost:8000`
+- Đường dẫn **không có tiền tố `/api`**, theo đúng file phân công (`/predict`, `/chat`...). **(đề xuất)**
+  `frontend/home.html` hiện đang gọi `/api/predict`, cần sửa lại khi nối API.
+- Dữ liệu gửi và nhận là JSON, trừ `/predict` gửi ảnh bằng `multipart/form-data`.
+- Lỗi trả theo dạng mặc định của FastAPI: `{"detail": "nội dung lỗi"}`.
+- Nhãn loại rác luôn dùng đúng tên trong `ai/models/labels.json`:
+  `giay`, `nhua`, `kim_loai`, `thuy_tinh`, `huu_co`, `pin_nguy_hai`, `rac_khac`.
+- Backend đọc thứ tự lớp từ `labels.json`, không ghi cứng trong code.
+- Giao diện chạy bằng Live Server (cổng 5500) còn backend ở cổng 8000, nên B cần bật CORS
+  cho `http://localhost:5500` và `http://127.0.0.1:5500`.
+
+## Bảng tổng hợp
+
+| Phương thức | Đường dẫn | Chức năng | Người làm | Cần đăng nhập |
+|---|---|---|---|---|
+| POST | `/predict` | F1 nhận diện ảnh, kèm F2 hướng dẫn | A | Không (đề xuất) |
+| GET | `/history` | F5 lịch sử quét | A | Có |
+| GET | `/guide` | F2 toàn bộ bảng tri thức | C | Không |
+| GET | `/guide/{label}` | F2 hướng dẫn cho một loại rác | C | Không |
+| POST | `/feedback` | F7 lưu nhãn người dùng sửa | C | Không (đề xuất) |
+| GET | `/stats` | F6 thống kê | C | Có (đề xuất) |
+| POST | `/chat` | F3 chatbot RAG | B | Chưa chốt |
+| POST | `/auth/register` | F4 đăng ký | B | Không |
+| POST | `/auth/login` | F4 đăng nhập, trả JWT | B | Không |
+
+---
+
+## POST /predict (A)
+
+Gửi một ảnh, nhận về loại rác, độ tin cậy, nhóm rác và hướng dẫn xử lý.
+
+**Gửi:** `multipart/form-data`, trường `file` là ảnh.
+
+**Nhận:**
+
+```json
+{
+  "id": 12,
+  "label": "nhua",
+  "confidence": 0.94,
+  "group": {
+    "id": "tai_che",
+    "name": "Chất thải rắn có khả năng tái sử dụng, tái chế",
+    "short": "Tái chế",
+    "color": "#2a6fdb",
+    "icon": "fa-recycle",
+    "hint": "Sạch, khô, ép dẹp"
+  },
+  "guide": {
+    "name": "Nhựa",
+    "warning": null,
+    "summary": "Đổ hết phần còn lại, tráng sơ, ép dẹp rồi gom riêng để tái chế.",
+    "steps": ["Đổ hết nước hoặc thức ăn còn sót bên trong.", "..."],
+    "dont": ["Không đốt nhựa vì tạo khói độc.", "..."],
+    "examples": ["Chai nước", "..."],
+    "reuse": "Cắt đáy chai làm chậu trồng rau mầm hoặc ống đựng bút."
+  }
+}
+```
+
+- `confidence` là số từ 0 đến 1. Giao diện coi dưới 0.6 là "AI chưa chắc chắn".
+- `id` là mã bản ghi lịch sử, dùng cho `/feedback`. **(đề xuất, A xác nhận)**
+- `group` và `guide` lấy bằng hàm có sẵn của C:
+
+```python
+from app.routers.guide import get_guide
+group, guide = get_guide(label)
+```
+
+- `guide.warning` chỉ khác `null` với `pin_nguy_hai`; giao diện hiện khung cảnh báo đỏ khi có giá trị.
+
+## GET /history (A)
+
+A điền: tham số, định dạng trả về.
+
+Giao diện hiện cần mỗi mục có: `id`, `label`, `confidence`, `time`, `image`,
+và nếu đã sửa nhãn thì thêm `corrected: true`, `original: "<nhãn AI dự đoán>"`.
+
+---
+
+## GET /guide (C)
+
+Trả toàn bộ nội dung `backend/app/data/f2_knowledge.json`, gồm `groups` và `labels`.
+Giao diện (`frontend/knowledge.js`) dùng để dựng thùng rác, nút lọc, danh sách chọn lại nhãn.
+
+## GET /guide/{label} (C)
+
+Ví dụ `GET /guide/pin_nguy_hai`.
+
+**Nhận:**
+
+```json
+{
+  "label": "pin_nguy_hai",
+  "group": { "id": "nguy_hai", "name": "Chất thải nguy hại", "short": "Nguy hại", "color": "#d23c27", "icon": "fa-triangle-exclamation", "hint": "Gom riêng, mang đến điểm thu" },
+  "guide": { "name": "Pin và chất thải nguy hại", "warning": "Chất thải nguy hại! ...", "summary": "...", "steps": [], "dont": [], "examples": [], "reuse": "..." }
+}
+```
+
+Nhãn không có trong bảng: trả mã 404.
+
+## POST /feedback (C) (đề xuất)
+
+Người dùng bấm "Kết quả sai?" và chọn lại loại rác. Nhãn sửa được lưu để phân tích lỗi
+và cải thiện mô hình.
+
+**Gửi:**
+
+```json
+{ "id": 12, "label": "giay", "note": "Đây là hộp giấy chứ không phải chai nhựa" }
+```
+
+- `id`: mã bản ghi nhận từ `/predict`.
+- `label`: nhãn đúng do người dùng chọn, phải thuộc `labels.json`.
+- `note`: ghi chú của người dùng, không bắt buộc, tối đa 200 ký tự.
+
+**Nhận:**
+
+```json
+{ "id": 12, "original": "nhua", "label": "giay", "corrected": true, "note": "Đây là hộp giấy chứ không phải chai nhựa" }
+```
+
+Nếu người dùng chọn lại đúng nhãn AI đã dự đoán thì `corrected` là `false`.
+
+## GET /stats (C) (đề xuất)
+
+Số liệu cho trang thống kê F6.
+
+**Nhận:**
+
+```json
+{
+  "total": 42,
+  "by_group": { "tai_che": 25, "thuc_pham": 9, "nguy_hai": 3, "khac": 5 },
+  "by_label": { "giay": 6, "nhua": 11, "kim_loai": 5, "thuy_tinh": 3, "huu_co": 9, "pin_nguy_hai": 3, "rac_khac": 5 },
+  "corrected": 4,
+  "by_day": [ { "date": "2026-11-14", "count": 7 } ],
+  "corrections": [ { "from": "thuy_tinh", "to": "nhua", "count": 2 } ]
+}
+```
+
+- Đếm theo nhãn cuối cùng (sau khi người dùng sửa, nếu có).
+- `corrected` là số lần người dùng sửa nhãn.
+- `by_day` gồm 7 ngày gần nhất, ngày không có lượt quét vẫn trả `count: 0`.
+- `corrections` đếm các cặp "AI đoán `from`, người dùng sửa thành `to`", sắp giảm dần theo `count`.
+  Trang `frontend/stats.html` dùng cho phần "AI hay nhầm ở đâu".
+- Cần chốt: thống kê theo từng người dùng hay toàn hệ thống.
+
+---
+
+## POST /chat (B)
+
+B điền.
+
+## POST /auth/register, POST /auth/login (B)
+
+B điền: trường gửi lên, định dạng token, cách giao diện gửi token (đề xuất: header `Authorization: Bearer <token>`).
+
+---
+
+## Việc cần nhóm chốt
+
+1. Có dùng tiền tố `/api` hay không.
+2. `/predict` có trả `id` bản ghi không, và có yêu cầu đăng nhập không.
+3. Người chưa đăng nhập quét ảnh thì lịch sử lưu ở đâu (trình duyệt hay không lưu).
+4. `/stats` tính theo từng người dùng hay toàn hệ thống.

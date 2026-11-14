@@ -512,33 +512,21 @@ footer{padding:56px 0 36px;color:var(--muted);font-size:14px}
     </a>
   </div>
 </nav>
+<script src="knowledge.js"></script>
 <script>
-/* Bảng tri thức: sau này có thể chuyển sang CSDL SQLite ở backend */
-const GROUPS={
-  organic:{name:"Hữu cơ",color:"#2e7d46",hint:"Để ráo, bỏ thùng riêng"},
-  recycle:{name:"Tái chế",color:"#2a6fdb",hint:"Sạch, khô, ép dẹp"},
-  hazard:{name:"Nguy hại",color:"#d23c27",hint:"Gom riêng, mang đến điểm thu"},
-  residual:{name:"Rác còn lại",color:"#5b6672",hint:"Làm sạch rồi bỏ chung"}
-};
-const CLASSES={
-  plastic:{name:"Chai nhựa / hộp nhựa",g:"recycle",how:"Đổ hết nước, tráng sơ, bỏ nắp và nhãn nếu được, ép dẹp rồi bỏ vào thùng tái chế.",idea:"Cắt đáy chai làm chậu trồng rau mầm hoặc ống đựng bút."},
-  metal:{name:"Lon kim loại",g:"recycle",how:"Đổ sạch bên trong, tráng nước, ép dẹp rồi bỏ vào thùng tái chế.",idea:"Làm hộp đựng đồ dùng văn phòng hoặc chậu cây nhỏ."},
-  paper:{name:"Giấy / bìa carton",g:"recycle",how:"Giữ khô, gỡ băng keo, gấp phẳng. Giấy dính dầu mỡ hoặc ướt thì bỏ vào rác còn lại.",idea:"Dùng làm hộp lưu trữ, giấy nháp hoặc lót luống rau."},
-  glass:{name:"Thủy tinh",g:"recycle",how:"Tráng sạch, bỏ nắp. Gói mảnh vỡ trong giấy dày và ghi chú để người thu gom biết.",idea:"Chai lọ dùng lại để đựng gia vị, nến thơm hoặc bình hoa."},
-  food:{name:"Rác thực phẩm",g:"organic",how:"Để ráo nước, bỏ vào thùng riêng, không lẫn túi nilon hay xương cứng lớn.",idea:"Ủ phân hữu cơ bón cây hoặc làm enzyme rửa sàn từ vỏ trái cây."},
-  hazard:{name:"Pin / bóng đèn / điện tử nhỏ",g:"hazard",how:"Không bỏ chung rác sinh hoạt. Gom riêng vào hộp kín và mang đến điểm thu gom rác nguy hại.",idea:"Không tái sử dụng tại nhà. Ưu tiên điểm thu hồi của cửa hàng hoặc địa phương."},
-  soft:{name:"Túi nilon / hộp xốp / ly trà sữa",g:"residual",how:"Làm sạch phần thức ăn, thức uống bên trong rồi bỏ vào thùng rác còn lại. Ly nhựa sạch có thể tách riêng.",idea:"Tái sử dụng túi nilon sạch nhiều lần, hạn chế mua mới."},
-  other:{name:"Rác khác",g:"residual",how:"Những món không thuộc các nhóm trên, bỏ vào thùng rác còn lại.",idea:"Xem lại có thể sửa hoặc tặng lại không trước khi bỏ."}
-};
+/* Bảng tri thức F2: GROUPS và CLASSES do knowledge.js nạp từ f2_knowledge.json */
 const $=id=>document.getElementById(id);
 
-/* Dựng 4 thùng */
-for(const gk in GROUPS){
-  const g=GROUPS[gk];
-  const items=Object.values(CLASSES).filter(c=>c.g===gk).map(c=>`<li>${c.name}</li>`).join("");
-  $("bins").insertAdjacentHTML("beforeend",
-   `<div class="bin" id="bin-${gk}" style="--c:${g.color}"><i class="token"></i><div class="lid"></div><div class="bbody"><h3>${g.name}</h3><p>${g.hint}</p><ul>${items}</ul></div></div>`);
+/* Dựng 4 thùng (chờ nạp xong bảng tri thức) */
+function buildBins(){
+  for(const gk in GROUPS){
+    const g=GROUPS[gk];
+    const items=Object.values(CLASSES).filter(c=>c.g===gk).map(c=>`<li>${c.name}</li>`).join("");
+    $("bins").insertAdjacentHTML("beforeend",
+     `<div class="bin" id="bin-${gk}" style="--c:${g.color}"><i class="token"></i><div class="lid"></div><div class="bbody"><h3>${g.name}</h3><p>${g.hint}</p><ul>${items}</ul></div></div>`);
+  }
 }
+const ready=loadKnowledge().then(buildBins).catch(e=>console.error(e));
 
 let currentFile=null;
 function setFile(f){
@@ -563,7 +551,7 @@ $("reset").addEventListener("click",()=>{
 });
 
 function show(key,conf,demo){
-  const c=CLASSES[key]||CLASSES.other,g=GROUPS[c.g];
+  const c=CLASSES[normLabel(key)],g=GROUPS[c.g];
   $("result").style.setProperty("--c",g.color);
   $("rName").textContent=c.name;$("rGroup").textContent="Nhóm "+g.name;
   $("rConf").textContent="Độ tin cậy "+Math.round(conf*100)+"%";
@@ -594,6 +582,7 @@ function toDataURL(file, max = 480) {
 
 $("go").addEventListener("click", async () => {
   if (!currentFile) return;
+  await ready;   /* bảo đảm bảng tri thức đã nạp xong */
   $("go").disabled = true; $("go").textContent = "Đang phân tích...";
   let label, confidence, demo = false;
   try {

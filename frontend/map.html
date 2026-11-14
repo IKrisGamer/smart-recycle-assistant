@@ -1,253 +1,521 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bản Đồ Điểm Thu Gom - Smart Recycle Assistant</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Leaflet CSS (Bản đồ) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#10B981',
-                        secondary: '#059669',
-                        deep: '#0e3a30',
-                        deep2: '#14493d',
-                        mint: '#e6f1e8',
-                        sun: '#f6c733'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        #map { height: 420px; width: 100%; border-radius: 16px; }
-        .custom-map-icon { background: none; border: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bản đồ điểm thu gom - Smart Recycle Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --deep:#0e3a30; --deep2:#14493d; --mint:#e6f1e8; --ink:#10231d; --muted:#4d6258; --sun:#f6c733;
+  --organic:#2e7d46; --recycle:#2a6fdb; --hazard:#d23c27; --residual:#5b6672;
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Be Vietnam Pro",sans-serif;background:var(--mint);color:var(--ink);line-height:1.6;padding-bottom:70px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+/* Header Navbar */
+.top{background:var(--deep);color:#fff;border-radius:0 0 30px 30px;padding-bottom:20px}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:68px}
+.brand{font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+.logo{display:flex;gap:3px;align-items:flex-end}
+.logo b{width:9px;border-radius:2px 2px 4px 4px}
+nav.main-nav{display:flex;gap:20px;font-size:15px;align-items:center}
+nav.main-nav a{color:#bcd6c9;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:6px;transition:color 0.2s}
+nav.main-nav a:hover, nav.main-nav a.active{color:#fff;font-weight:700}
+nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px;border-radius:999px;font-weight:800}
+
+
+/* Trang bản đồ điểm thu gom */
+.page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin:28px 0 18px}
+.page-title{font-size:1.8rem;font-weight:800;color:var(--deep);line-height:1.2}
+.page-sub{color:var(--muted);font-size:14.5px;margin-top:4px}
+.btn-locate{font:inherit;font-weight:800;font-size:15px;background:var(--sun);color:var(--ink);border:0;border-radius:12px;padding:12px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .15s}
+.btn-locate:hover{transform:translateY(-2px)}
+.map-layout{display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start}
+.panel{background:#fff;border-radius:22px;padding:14px;box-shadow:0 4px 12px rgba(0,0,0,.04);border:1px solid #dbe6df}
+.map-box{position:relative}
+#map{height:440px;width:100%;border-radius:14px;background:#d9e6dd;z-index:0}
+.map-fail{position:absolute;inset:14px;display:grid;place-items:center;text-align:center;padding:20px;color:var(--muted);font-size:14px}
+.map-fail[hidden]{display:none}
+.map-cap{font-size:12.5px;color:var(--muted);margin-top:10px;display:flex;align-items:center;gap:8px}
+.map-cap i{color:var(--deep)}
+.custom-map-icon{background:none;border:none;font-size:30px;line-height:1;text-shadow:0 2px 4px rgba(0,0,0,.25)}
+.side{display:grid;gap:14px}
+.filter h2{font-size:12.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.filter-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab-btn{font:inherit;background:#fff;border:1px solid #c8d8ce;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .2s}
+.tab-btn.active,.tab-btn:hover{background:var(--deep);color:#fff;border-color:var(--deep)}
+.stations{display:grid;gap:12px;max-height:340px;overflow-y:auto;padding-right:2px}
+.station{background:#fff;border-radius:18px;padding:16px;border:1px solid #dbe6df;box-shadow:0 4px 12px rgba(0,0,0,.04);cursor:pointer;transition:transform .2s,border-color .2s}
+.station:hover{transform:translateY(-2px);border-color:var(--sc)}
+.station .badge{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:700;color:#fff;background:var(--sc)}
+.station h3{font-size:1rem;font-weight:800;margin-top:8px;line-height:1.35}
+.station .addr{font-size:13px;color:var(--muted);margin-top:4px}
+.station .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid #e3ece6;font-size:12.5px}
+.station .hours{color:var(--deep);font-weight:600}
+.station .dir{background:var(--deep);color:#fff;text-decoration:none;font-weight:700;padding:5px 12px;border-radius:999px;white-space:nowrap}
+.station .dir:hover{background:var(--organic)}
+.none{font-size:14px;color:var(--muted);padding:6px 2px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:var(--deep);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:2000;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:900px){.map-layout{grid-template-columns:1fr}#map{height:340px}.stations{max-height:none}}
+@media(max-width:520px){.btn-locate{width:100%;justify-content:center}}
+
+@media(max-width:900px){
+  nav.main-nav{display:none}
+}
+
+/* ================= FOOTER CHUNG ================= */
+.site-footer {
+  background: var(--deep);
+  color: #cfe3d8;
+  padding-top: 54px;
+  margin-top: 60px;
+  border-radius: 36px 36px 0 0;
+  font-size: 14px;
+  position: relative;
+  z-index: 10;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr 1fr;
+  gap: 36px;
+  padding-bottom: 40px;
+}
+
+.f-col .brand {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.f-desc {
+  line-height: 1.6;
+  font-size: 13.5px;
+  color: #b3cdc0;
+  margin-bottom: 16px;
+}
+
+.f-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.f-tag {
+  background: var(--deep2);
+  color: #d1e7dc;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.f-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+.f-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.f-links a {
+  color: #cfe3d8;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.f-links a:hover {
+  color: var(--sun);
+  transform: translateX(3px);
+}
+
+.f-groups {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.f-groups li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.organic { background: var(--organic); }
+.dot.recycle { background: var(--recycle); }
+.dot.hazard { background: var(--hazard); }
+.dot.residual { background: var(--residual); }
+
+.f-info {
+  margin-bottom: 6px;
+  font-size: 13.5px;
+}
+
+.f-social {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.f-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--deep2);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.f-social a:hover {
+  background: var(--sun);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.f-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 18px 0;
+  font-size: 12.5px;
+  color: #8faea0;
+}
+
+.f-bottom-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ================= MOBILE BOTTOM NAVIGATION ================= */
+.bottom-nav-mobile {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 1px solid #d4e3d9;
+  padding: 6px 0 8px;
+  z-index: 1000;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.b-nav-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.b-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #5c7267;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+
+.b-item i {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.b-item.active, .b-item:hover {
+  color: var(--organic);
+}
+
+@media (max-width: 900px) {
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .bottom-nav-mobile {
+    display: block;
+  }
+  body {
+    padding-bottom: 60px;
+  }
+}
+
+@media (max-width: 520px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .f-bottom-wrap {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+</style>
 </head>
-<body class="bg-[#e6f1e8] text-gray-800 font-sans pb-16 md:pb-0">
+<body>
 
-    <!-- Header / Navbar Desktop & Mobile -->
-    <header class="bg-[#0e3a30] text-white sticky top-0 z-30 shadow-md">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <a href="home.html" class="flex items-center space-x-2 font-extrabold text-lg text-white">
-                <span class="flex items-end space-x-0.5">
-                    <b class="w-2 h-3 bg-emerald-400 rounded-sm"></b>
-                    <b class="w-2 h-5 bg-blue-400 rounded-sm"></b>
-                    <b class="w-2 h-4 bg-red-400 rounded-sm"></b>
-                    <b class="w-2 h-6 bg-gray-400 rounded-sm"></b>
-                </span>
-                <span>Smart Recycle</span>
-            </a>
+<!-- Header Top Navigation -->
+<div class="top">
+  <header>
+    <div class="wrap">
+      <a class="brand" href="home.html">
+        <span class="logo"><b style="height:12px;background:#5fc27a"></b><b style="height:18px;background:#5b9bf5"></b><b style="height:15px;background:#f2735f"></b><b style="height:21px;background:#9aa6b2"></b></span>Smart Recycle
+      </a>
+      <nav class="main-nav">
+        <a href="home.html"><i class="fa-solid fa-camera"></i> Quét AI</a>
+        <a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử</a>
+        <a href="map.html" class="active"><i class="fa-solid fa-map-location-dot"></i> Trạm thu gom</a>
+        <a href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản</a>
+        <a href="login.html" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
+      </nav>
+    </div>
+  </header>
+</div>
 
-            <!-- Navigation Desktop -->
-            <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
-                <a href="home.html" class="text-emerald-200 hover:text-white transition"><i class="fa-solid fa-camera mr-1"></i> Quét AI</a>
-                <a href="history.html" class="text-emerald-200 hover:text-white transition"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Lịch sử</a>
-                <a href="map.html" class="text-white font-bold border-b-2 border-sun pb-1"><i class="fa-solid fa-map-location-dot mr-1"></i> Trạm thu gom</a>
-                <a href="profile.html" class="text-emerald-200 hover:text-white transition"><i class="fa-solid fa-user mr-1"></i> Tài khoản</a>
-                <a href="login.html" class="bg-sun text-gray-900 font-extrabold px-4 py-1.5 rounded-full hover:bg-amber-300 transition"><i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng nhập</a>
-            </nav>
-        </div>
-    </header>
+<!-- Main Content -->
+<main class="wrap">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Trạm thu gom và tái chế</h1>
+      <p class="page-sub">Tìm điểm thu gom rác nguy hại, pin cũ, ve chai tái chế gần vị trí của bạn.</p>
+    </div>
+    <button type="button" class="btn-locate" id="btnLocate"><i class="fa-solid fa-crosshairs"></i> Định vị vị trí của tôi</button>
+  </div>
 
-    <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+  <div class="map-layout">
+    <div class="panel map-box">
+      <div id="map"></div>
+      <div class="map-fail" id="mapFail" hidden>Không tải được bản đồ. Hãy kiểm tra kết nối mạng rồi tải lại trang. Danh sách điểm thu gom bên cạnh vẫn dùng được.</div>
+      <p class="map-cap"><i class="fa-solid fa-circle-info"></i> Bấm vào một điểm trong danh sách để xem vị trí trên bản đồ.</p>
+    </div>
 
-        <!-- Tieude & Nut dinh vi -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-extrabold text-[#0e3a30]">Trạm Thu Gom & Tái Chế</h1>
-                <p class="text-sm text-gray-600 mt-1">Tìm kiếm điểm thu gom rác nguy hại, pin cũ, ve chai tái chế gần vị trí của bạn</p>
-            </div>
-            <button onclick="locateUser()" class="inline-flex items-center justify-center bg-emerald-600 text-white font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm">
-                <i class="fa-solid fa-crosshairs mr-2"></i> Định vị vị trí của tôi
-            </button>
-        </div>
+    <div class="side">
+      <div class="panel filter">
+        <h2>Lọc theo loại rác tiếp nhận</h2>
+        <div class="filter-tabs" id="filterTabs"></div>
+      </div>
+      <div class="stations" id="stations"></div>
+    </div>
+  </div>
+</main>
 
-        <!-- Khung Bản Đồ & Bộ Lọc -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Map Container (Chiếm 2 cột trên Desktop) -->
-            <div class="lg:col-span-2 bg-white rounded-2xl p-3 shadow-sm border border-emerald-100 relative">
-                <div id="map" class="z-0"></div>
-                <div class="absolute bottom-6 left-6 bg-white/95 backdrop-blur px-3.5 py-2 rounded-full shadow-md text-xs font-semibold text-gray-700 z-[1000] flex items-center">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping mr-2"></span>
-                    Đang hiển thị các điểm thu gom xung quanh
-                </div>
-            </div>
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="wrap footer-content">
+    <div class="f-col f-brand">
+      <a class="brand" href="home.html">
+        <span class="logo" aria-hidden="true">
+          <b style="height:12px;background:#5fc27a"></b>
+          <b style="height:18px;background:#5b9bf5"></b>
+          <b style="height:15px;background:#f2735f"></b>
+          <b style="height:21px;background:#9aa6b2"></b>
+        </span>
+        Smart Recycle
+      </a>
+      <p class="f-desc">
+        Trợ lý AI thông minh hỗ trợ người dân phân loại và tái chế rác thải tại nguồn theo Luật Bảo vệ môi trường.
+      </p>
+      <div class="f-badges">
+        <span class="f-tag"><i class="fa-solid fa-leaf"></i> Phân loại chuẩn</span>
+        <span class="f-tag"><i class="fa-solid fa-bolt"></i> Phản hồi &lt; 3s</span>
+      </div>
+    </div>
 
-            <!-- Bộ lọc & Danh sách trạm (Cột bên phải Desktop) -->
-            <div class="space-y-4">
-                
-                <!-- Bộ Lọc Loại Rác -->
-                <div class="bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm space-y-2">
-                    <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Lọc theo loại rác tiếp nhận</h2>
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="filterMap('all', this)" class="filter-btn bg-[#0e3a30] text-white text-xs px-3 py-1.5 rounded-full font-semibold">Tất cả</button>
-                        <button onclick="filterMap('hazard', this)" class="filter-btn bg-gray-100 text-gray-600 hover:bg-emerald-50 text-xs px-3 py-1.5 rounded-full font-semibold">Pin & Điện tử</button>
-                        <button onclick="filterMap('recycle', this)" class="filter-btn bg-gray-100 text-gray-600 hover:bg-emerald-50 text-xs px-3 py-1.5 rounded-full font-semibold">Chai nhựa & Lon nhôm</button>
-                    </div>
-                </div>
+    <div class="f-col">
+      <h3 class="f-title">Liên kết nhanh</h3>
+      <ul class="f-links">
+        <li><a href="home.html"><i class="fa-solid fa-camera"></i> Quét AI nhận diện</a></li>
+        <li><a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử phân loại</a></li>
+        <li><a href="map.html"><i class="fa-solid fa-map-location-dot"></i> Bản đồ trạm thu gom</a></li>
+        <li><a href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản cá nhân</a></li>
+      </ul>
+    </div>
 
-                <!-- Danh Sách Địa Điểm Thu Gom -->
-                <div class="space-y-3 max-h-[320px] overflow-y-auto pr-1">
-                    
-                    <!-- Item 1 -->
-                    <div class="station-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2" data-type="hazard">
-                        <span class="inline-block bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                            <i class="fa-solid fa-battery-half mr-1"></i> Rác Nguy Hại & Pin Cũ
-                        </span>
-                        <h3 class="font-bold text-gray-900 text-base">Điểm Thu Gom Pin Cũ Việt Nam Tái Chế</h3>
-                        <p class="text-xs text-gray-500"><i class="fa-solid fa-location-dot text-gray-400 mr-1"></i> 202 Lý Thường Kiệt, Quận 10, TP.HCM</p>
-                        <div class="flex justify-between items-center pt-1 border-t border-gray-50">
-                            <span class="text-xs text-emerald-600 font-medium"><i class="fa-regular fa-clock mr-1"></i> 08:00 - 17:00 (T2 - T7)</span>
-                            <a href="https://maps.google.com" target="_blank" class="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg font-bold hover:bg-emerald-600 hover:text-white transition">Chỉ đường</a>
-                        </div>
-                    </div>
+    <div class="f-col">
+      <h3 class="f-title">4 Nhóm Rác Chính</h3>
+      <ul class="f-groups">
+        <li><span class="dot organic"></span> Rác Hữu Cơ</li>
+        <li><span class="dot recycle"></span> Rác Tái Chế</li>
+        <li><span class="dot hazard"></span> Rác Nguy Hại</li>
+        <li><span class="dot residual"></span> Rác Còn Lại</li>
+      </ul>
+    </div>
 
-                    <!-- Item 2 -->
-                    <div class="station-item bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2" data-type="recycle">
-                        <span class="inline-block bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                            <i class="fa-solid fa-recycle mr-1"></i> Chai Nhựa & Lon Kim Loại
-                        </span>
-                        <h3 class="font-bold text-gray-900 text-base">Trạm Tái Chế Ve Chai Công Cộng #04</h3>
-                        <p class="text-xs text-gray-500"><i class="fa-solid fa-location-dot text-gray-400 mr-1"></i> 45 Nguyễn Văn Cừ, Quận 5, TP.HCM</p>
-                        <div class="flex justify-between items-center pt-1 border-t border-gray-50">
-                            <span class="text-xs text-emerald-600 font-medium"><i class="fa-regular fa-clock mr-1"></i> Mở cửa cả ngày</span>
-                            <a href="https://maps.google.com" target="_blank" class="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg font-bold hover:bg-emerald-600 hover:text-white transition">Chỉ đường</a>
-                        </div>
-                    </div>
+    <div class="f-col">
+      <h3 class="f-title">Thông tin đồ án</h3>
+      <p class="f-info"><strong>Đồ án 4:</strong> Smart Recycle Assistant</p>
+      <p class="f-info"><strong>Mô hình:</strong> CNN MobileNetV2 / EfficientNet</p>
+      <p class="f-info"><strong>Backend:</strong> FastAPI &amp; SQLite</p>
+      <div class="f-social">
+        <a href="https://github.com" target="_blank" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
+        <a href="home.html#cong-nghe" aria-label="Tài liệu công nghệ"><i class="fa-solid fa-code"></i></a>
+      </div>
+    </div>
+  </div>
 
-                </div>
+  <div class="f-bottom">
+    <div class="wrap f-bottom-wrap">
+      <p>© 2026 Smart Recycle Assistant. Tất cả quyền được bảo lưu.</p>
+      <p>Phát triển vì mục tiêu Môi Trường Xanh - Việt Nam</p>
+    </div>
+  </div>
+</footer>
 
-            </div>
+<!-- Bottom Navigation for Mobile -->
+<nav class="bottom-nav-mobile" aria-label="Điều hướng điện thoại">
+  <div class="b-nav-container">
+    <a href="home.html" class="b-item" id="nav-home">
+      <i class="fa-solid fa-camera"></i>
+      <span>Quét AI</span>
+    </a>
+    <a href="history.html" class="b-item" id="nav-history">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>Lịch sử</span>
+    </a>
+    <a href="map.html" class="b-item active" id="nav-map">
+      <i class="fa-solid fa-map-location-dot"></i>
+      <span>Điểm gom</span>
+    </a>
+    <a href="profile.html" class="b-item" id="nav-profile">
+      <i class="fa-solid fa-user"></i>
+      <span>Tài khoản</span>
+    </a>
+  </div>
+</nav>
 
-        </div>
+<div class="toast" id="toast" role="status"></div>
 
-    </main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* Danh sách điểm thu gom: dữ liệu mẫu. Sau này lấy từ backend. */
+const TYPES={
+  hazard:{name:"Rác nguy hại và pin cũ",tab:"Pin và điện tử",color:"#d23c27",icon:"fa-battery-half"},
+  recycle:{name:"Chai nhựa và lon kim loại",tab:"Chai nhựa và lon nhôm",color:"#2a6fdb",icon:"fa-recycle"}
+};
+const STATIONS=[
+  {id:1,type:"hazard",name:"Điểm Thu Gom Pin Cũ Việt Nam Tái Chế",addr:"202 Lý Thường Kiệt, Quận 10, TP.HCM",hours:"08:00 - 17:00 (T2 - T7)",lat:10.7626,lng:106.6602},
+  {id:2,type:"recycle",name:"Trạm Tái Chế Ve Chai Công Cộng #04",addr:"45 Nguyễn Văn Cừ, Quận 5, TP.HCM",hours:"Mở cửa cả ngày",lat:10.7588,lng:106.6823}
+];
+const DEFAULT_CENTER=[10.7769,106.7009];
 
-    <!-- Footer -->
-    <footer class="bg-[#0e3a30] text-emerald-100 pt-10 pb-6 mt-12 rounded-t-3xl">
-        <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-white/10 text-sm">
-            <div class="space-y-3">
-                <a class="flex items-center space-x-2 font-extrabold text-lg text-white" href="home.html">
-                    <span>Smart Recycle</span>
-                </a>
-                <p class="text-xs text-emerald-200/80 leading-relaxed">Trợ lý AI hỗ trợ người dân phân loại và tái chế rác thải tại nguồn theo Luật Bảo vệ môi trường 2020.</p>
-            </div>
-            <div>
-                <h3 class="text-white font-bold mb-3">Liên kết nhanh</h3>
-                <ul class="space-y-2 text-xs">
-                    <li><a href="home.html" class="hover:text-amber-300 transition"><i class="fa-solid fa-camera mr-1"></i> Quét AI nhận diện</a></li>
-                    <li><a href="history.html" class="hover:text-amber-300 transition"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Lịch sử phân loại</a></li>
-                    <li><a href="map.html" class="hover:text-amber-300 transition"><i class="fa-solid fa-map-location-dot mr-1"></i> Trạm thu gom</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-white font-bold mb-3">4 Nhóm Rác Chính</h3>
-                <ul class="space-y-1.5 text-xs">
-                    <li><span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span> Rác Hữu Cơ</li>
-                    <li><span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1.5"></span> Rác Tái Chế</li>
-                    <li><span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-1.5"></span> Rác Nguy Hại</li>
-                    <li><span class="inline-block w-2 h-2 rounded-full bg-gray-400 mr-1.5"></span> Rác Còn Lại</li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-white font-bold mb-3">Thông tin đồ án</h3>
-                <p class="text-xs"><strong>Mô hình AI:</strong> CNN MobileNetV2</p>
-                <p class="text-xs mt-1"><strong>Backend:</strong> Python FastAPI & SQLite</p>
-            </div>
-        </div>
-        <div class="max-w-6xl mx-auto px-4 pt-4 text-center text-xs text-emerald-300/60">
-            © 2026 Smart Recycle Assistant. Phát triển vì môi trường Việt Nam.
-        </div>
-    </footer>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+function toast(msg){
+  const t=$("toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("show"),2600);
+}
 
-    <!-- Bottom Navigation Mobile -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30">
-        <div class="max-w-md mx-auto flex justify-around py-2">
-            <a href="home.html" class="flex flex-col items-center text-gray-400 hover:text-emerald-600">
-                <i class="fa-solid fa-camera text-lg"></i>
-                <span class="text-[10px] mt-0.5 font-medium">Quét AI</span>
-            </a>
-            <a href="history.html" class="flex flex-col items-center text-gray-400 hover:text-emerald-600">
-                <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-                <span class="text-[10px] mt-0.5 font-medium">Lịch sử</span>
-            </a>
-            <a href="map.html" class="flex flex-col items-center text-emerald-600">
-                <i class="fa-solid fa-map-location-dot text-lg"></i>
-                <span class="text-[10px] mt-0.5 font-medium">Trạm gom</span>
-            </a>
-            <a href="profile.html" class="flex flex-col items-center text-gray-400 hover:text-emerald-600">
-                <i class="fa-solid fa-user text-lg"></i>
-                <span class="text-[10px] mt-0.5 font-medium">Tài khoản</span>
-            </a>
-        </div>
-    </nav>
+/* ---------- Bản đồ ---------- */
+let map=null,userMarker=null;const markers={};
+if(typeof L==="undefined"){
+  $("mapFail").hidden=false;
+}else{
+  map=L.map("map").setView(DEFAULT_CENTER,13);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+  STATIONS.forEach(s=>{
+    const t=TYPES[s.type];
+    const icon=L.divIcon({html:`<i class="fa-solid fa-location-dot" style="color:${t.color}"></i>`,className:"custom-map-icon",iconSize:[30,30],iconAnchor:[15,30],popupAnchor:[0,-28]});
+    markers[s.id]=L.marker([s.lat,s.lng],{icon}).bindPopup(`<b>${esc(s.name)}</b><br>${esc(s.addr)}<br>${esc(t.name)}`).addTo(map);
+  });
+}
 
-    <!-- Leaflet JS & Map Script -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        const defaultLat = 10.7769;
-        const defaultLng = 106.7009;
+/* ---------- Danh sách và bộ lọc ---------- */
+let current="all";
+function renderTabs(){
+  const tabs=[["all","Tất cả"],...Object.entries(TYPES).map(([k,t])=>[k,t.tab])];
+  $("filterTabs").innerHTML=tabs.map(([k,n])=>`<button type="button" class="tab-btn${k===current?" active":""}" data-type="${k}">${esc(n)}</button>`).join("");
+}
+function renderStations(){
+  const list=STATIONS.filter(s=>current==="all"||s.type===current);
+  $("stations").innerHTML=list.map(s=>{
+    const t=TYPES[s.type];
+    return `<div class="station" data-id="${s.id}" style="--sc:${t.color}" tabindex="0">
+      <span class="badge"><i class="fa-solid ${t.icon}"></i> ${esc(t.name)}</span>
+      <h3>${esc(s.name)}</h3>
+      <p class="addr"><i class="fa-solid fa-location-dot"></i> ${esc(s.addr)}</p>
+      <div class="foot">
+        <span class="hours"><i class="fa-regular fa-clock"></i> ${esc(s.hours)}</span>
+        <a class="dir" href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}" target="_blank" rel="noopener">Chỉ đường</a>
+      </div>
+    </div>`;
+  }).join("")||'<p class="none">Chưa có điểm thu gom nào cho loại rác này.</p>';
+  /* Bản đồ chỉ hiện ghim của các điểm đang được lọc */
+  if(map)STATIONS.forEach(s=>{
+    const show=current==="all"||s.type===current, m=markers[s.id];
+    if(show&&!map.hasLayer(m))m.addTo(map);
+    if(!show&&map.hasLayer(m))map.removeLayer(m);
+  });
+}
+function focusStation(id){
+  const s=STATIONS.find(x=>x.id===id);
+  if(!s||!map)return;
+  map.setView([s.lat,s.lng],16);markers[s.id].openPopup();
+}
+$("filterTabs").addEventListener("click",e=>{
+  const b=e.target.closest(".tab-btn");if(!b)return;
+  current=b.dataset.type;renderTabs();renderStations();
+});
+$("stations").addEventListener("click",e=>{
+  if(e.target.closest(".dir"))return;               /* bấm "Chỉ đường" thì mở Google Maps */
+  const c=e.target.closest(".station");if(c)focusStation(Number(c.dataset.id));
+});
+$("stations").addEventListener("keydown",e=>{
+  if(e.key!=="Enter")return;
+  const c=e.target.closest(".station");if(c&&e.target===c)focusStation(Number(c.dataset.id));
+});
 
-        const map = L.map('map').setView([defaultLat, defaultLng], 13);
+/* ---------- Định vị ---------- */
+$("btnLocate").addEventListener("click",()=>{
+  if(!map){toast("Bản đồ chưa tải được nên không thể định vị");return}
+  if(!navigator.geolocation){toast("Trình duyệt không hỗ trợ định vị");return}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const p=[pos.coords.latitude,pos.coords.longitude];
+    map.setView(p,15);
+    if(userMarker)userMarker.setLatLng(p);
+    else userMarker=L.circleMarker(p,{radius:9,color:"#fff",weight:3,fillColor:"#0e3a30",fillOpacity:1}).addTo(map).bindPopup("<b>Vị trí của bạn</b>");
+    userMarker.openPopup();
+  },()=>toast("Không lấy được vị trí. Hãy cho phép trang truy cập vị trí."));
+});
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        const recycleIcon = L.divIcon({
-            html: '<i class="fa-solid fa-location-dot text-emerald-600 text-3xl"></i>',
-            className: 'custom-map-icon',
-            iconSize: [30, 30],
-            iconAnchor: [15, 30]
-        });
-
-        L.marker([10.7626, 106.6602], {icon: recycleIcon}).addTo(map)
-            .bindPopup('<b>Điểm Thu Gom Pin Cũ</b><br>202 Lý Thường Kiệt, Q.10');
-
-        L.marker([10.7588, 106.6823], {icon: recycleIcon}).addTo(map)
-            .bindPopup('<b>Trạm Tái Chế Ve Chai #04</b><br>45 Nguyễn Văn Cừ, Q.5');
-
-        function locateUser() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const userLat = position.coords.latitude;
-                    const userLng = position.coords.longitude;
-                    map.setView([userLat, userLng], 15);
-                    L.marker([userLat, userLng]).addTo(map).bindPopup('<b>Vị trí của bạn</b>').openPopup();
-                }, () => {
-                    alert('Không thể lấy vị trí hiện tại của bạn!');
-                });
-            } else {
-                alert('Trình duyệt không hỗ trợ định vị GPS!');
-            }
-        }
-
-        function filterMap(type, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.className = 'filter-btn bg-gray-100 text-gray-600 hover:bg-emerald-50 text-xs px-3 py-1.5 rounded-full font-semibold';
-            });
-            btn.className = 'filter-btn bg-[#0e3a30] text-white text-xs px-3 py-1.5 rounded-full font-semibold';
-
-            const items = document.querySelectorAll('.station-item');
-            items.forEach(item => {
-                if (type === 'all' || item.dataset.type === type) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }
-    </script>
+renderTabs();renderStations();
+</script>
 </body>
 </html>
