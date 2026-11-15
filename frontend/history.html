@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lịch Sử Quét - Smart Recycle Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --deep:#0e3a30; --deep2:#14493d; --mint:#e6f1e8; --ink:#10231d; --muted:#4d6258; --sun:#f6c733;
+  --organic:#2e7d46; --recycle:#2a6fdb; --hazard:#d23c27; --residual:#5b6672;
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Be Vietnam Pro",sans-serif;background:var(--mint);color:var(--ink);line-height:1.6;padding-bottom:70px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+/* Header Navbar */
+.top{background:var(--deep);color:#fff;border-radius:0 0 30px 30px;padding-bottom:20px}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:68px}
+.brand{font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+.logo{display:flex;gap:3px;align-items:flex-end}
+.logo b{width:9px;border-radius:2px 2px 4px 4px}
+nav.main-nav{display:flex;gap:20px;font-size:15px;align-items:center}
+nav.main-nav a{color:#bcd6c9;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:6px;transition:color 0.2s}
+nav.main-nav a:hover, nav.main-nav a.active{color:#fff;font-weight:700}
+nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px;border-radius:999px;font-weight:800}
+
+/* Page Title & Filter Tabs */
+.page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:28px 0 16px}
+.page-title{font-size:1.8rem;font-weight:800;color:var(--deep)}
+.filter-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.tab-btn{background:#fff;border:1px solid #c8d8ce;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all 0.2s}
+.tab-btn.active, .tab-btn:hover{background:var(--deep);color:#fff;border-color:var(--deep)}
+
+/* Cards & List */
+.history-list{display:grid;gap:14px;margin-top:10px}
+.card{background:#fff;border-radius:18px;padding:16px;display:flex;align-items:center;gap:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);border:1px solid #dbe6df;transition:transform 0.2s}
+.card:hover{transform:translateY(-2px)}
+.card img{width:70px;height:70px;border-radius:12px;object-fit:cover;background:#e2ebe5;flex-shrink:0}
+.card-info{flex:1}
+.card-info h3{font-size:1.05rem;font-weight:800;color:var(--ink)}
+.card-info p{font-size:13px;color:var(--muted);margin-top:2px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;color:#fff;margin-top:4px}
+.bg-recycle{background:var(--recycle)}
+.bg-organic{background:var(--organic)}
+.bg-hazard{background:var(--hazard)}
+.bg-residual{background:var(--residual)}
+.btn-detail{color:var(--deep);font-size:18px;text-decoration:none;padding:8px}
+
+@media(max-width:900px){
+  nav.main-nav{display:none}
+}
+
+/* ================= FOOTER CHUNG ================= */
+.site-footer {
+  background: var(--deep);
+  color: #cfe3d8;
+  padding-top: 54px;
+  margin-top: 60px;
+  border-radius: 36px 36px 0 0;
+  font-size: 14px;
+  position: relative;
+  z-index: 10;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr 1fr;
+  gap: 36px;
+  padding-bottom: 40px;
+}
+
+.f-col .brand {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.f-desc {
+  line-height: 1.6;
+  font-size: 13.5px;
+  color: #b3cdc0;
+  margin-bottom: 16px;
+}
+
+.f-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.f-tag {
+  background: var(--deep2);
+  color: #d1e7dc;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.f-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+.f-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.f-links a {
+  color: #cfe3d8;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.f-links a:hover {
+  color: var(--sun);
+  transform: translateX(3px);
+}
+
+.f-groups {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.f-groups li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.organic { background: var(--organic); }
+.dot.recycle { background: var(--recycle); }
+.dot.hazard { background: var(--hazard); }
+.dot.residual { background: var(--residual); }
+
+.f-info {
+  margin-bottom: 6px;
+  font-size: 13.5px;
+}
+
+.f-social {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.f-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--deep2);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.f-social a:hover {
+  background: var(--sun);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.f-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 18px 0;
+  font-size: 12.5px;
+  color: #8faea0;
+}
+
+.f-bottom-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ================= MOBILE BOTTOM NAVIGATION ================= */
+.bottom-nav-mobile {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 1px solid #d4e3d9;
+  padding: 6px 0 8px;
+  z-index: 1000;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.b-nav-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.b-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #5c7267;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+
+.b-item i {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.b-item.active, .b-item:hover {
+  color: var(--organic);
+}
+
+@media (max-width: 900px) {
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .bottom-nav-mobile {
+    display: block;
+  }
+  body {
+    padding-bottom: 60px;
+  }
+}
+
+@media (max-width: 520px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .f-bottom-wrap {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Header Top Navigation -->
+<div class="top">
+  <header>
+    <div class="wrap">
+      <a class="brand" href="home.html">
+        <span class="logo"><b style="height:12px;background:#5fc27a"></b><b style="height:18px;background:#5b9bf5"></b><b style="height:15px;background:#f2735f"></b><b style="height:21px;background:#9aa6b2"></b></span>Smart Recycle
+      </a>
+      <nav class="main-nav">
+        <a href="home.html"><i class="fa-solid fa-camera"></i> Quét AI</a>
+        <a href="history.html" class="active"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử</a>
+        <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> Trạm thu gom</a>
+        <a href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản</a>
+        <a href="login.html" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
+      </nav>
+    </div>
+  </header>
+</div>
+
+<!-- Main Content -->
+<main class="wrap">
+  <div class="page-header">
+    <h1 class="page-title">Lịch sử phân loại</h1>
+    <!-- Bộ lọc loại rác nhanh -->
+    <div class="filter-tabs">
+      <button class="tab-btn active" onclick="filterCategory('all', this)">Tất cả</button>
+      <button class="tab-btn" onclick="filterCategory('recycle', this)">Tái chế</button>
+      <button class="tab-btn" onclick="filterCategory('organic', this)">Hữu cơ</button>
+      <button class="tab-btn" onclick="filterCategory('hazard', this)">Nguy hại</button>
+      <button class="tab-btn" onclick="filterCategory('residual', this)">Còn lại</button>
+    </div>
+  </div>
+  
+  <div class="history-list" id="historyList">
+    <!-- Item 1 -->
+    <div class="card" data-group="recycle">
+      <img src="https://images.unsplash.com/photo-1528190336454-13cd56b45b5a?w=150" alt="Chai nhựa">
+      <div class="card-info">
+        <h3>Chai Nhựa PET</h3>
+        <p><i class="fa-regular fa-clock"></i> 10:30 - 11/10/2026</p>
+        <span class="badge bg-recycle">Tái chế (94%)</span>
+      </div>
+      <a href="detail.html" class="btn-detail"><i class="fa-solid fa-chevron-right"></i></a>
+    </div>
+
+    <!-- Item 2 -->
+    <div class="card" data-group="recycle">
+      <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=150" alt="Vỏ lon">
+      <div class="card-info">
+        <h3>Lon Nhôm Bia</h3>
+        <p><i class="fa-regular fa-clock"></i> 08:15 - 10/10/2026</p>
+        <span class="badge bg-recycle">Tái chế (89%)</span>
+      </div>
+      <a href="detail.html" class="btn-detail"><i class="fa-solid fa-chevron-right"></i></a>
+    </div>
+
+    <!-- Item 3 -->
+    <div class="card" data-group="hazard">
+      <img src="https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=150" alt="Pin cũ">
+      <div class="card-info">
+        <h3>Pin Tiểu AA Cũ</h3>
+        <p><i class="fa-regular fa-clock"></i> 16:45 - 08/10/2026</p>
+        <span class="badge bg-hazard">Rác Nguy Hại (98%)</span>
+      </div>
+      <a href="detail.html" class="btn-detail"><i class="fa-solid fa-chevron-right"></i></a>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="wrap footer-content">
+    <div class="f-col f-brand">
+      <a class="brand" href="home.html">
+        <span class="logo" aria-hidden="true">
+          <b style="height:12px;background:#5fc27a"></b>
+          <b style="height:18px;background:#5b9bf5"></b>
+          <b style="height:15px;background:#f2735f"></b>
+          <b style="height:21px;background:#9aa6b2"></b>
+        </span>
+        Smart Recycle
+      </a>
+      <p class="f-desc">
+        Trợ lý AI thông minh hỗ trợ người dân phân loại và tái chế rác thải tại nguồn theo Luật Bảo vệ môi trường.
+      </p>
+      <div class="f-badges">
+        <span class="f-tag"><i class="fa-solid fa-leaf"></i> Phân loại chuẩn</span>
+        <span class="f-tag"><i class="fa-solid fa-bolt"></i> Phản hồi &lt; 3s</span>
+      </div>
+    </div>
+
+    <div class="f-col">
+      <h3 class="f-title">Liên kết nhanh</h3>
+      <ul class="f-links">
+        <li><a href="home.html"><i class="fa-solid fa-camera"></i> Quét AI nhận diện</a></li>
+        <li><a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử phân loại</a></li>
+        <li><a href="map.html"><i class="fa-solid fa-map-location-dot"></i> Bản đồ trạm thu gom</a></li>
+        <li><a href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản cá nhân</a></li>
+      </ul>
+    </div>
+
+    <div class="f-col">
+      <h3 class="f-title">4 Nhóm Rác Chính</h3>
+      <ul class="f-groups">
+        <li><span class="dot organic"></span> Rác Hữu Cơ</li>
+        <li><span class="dot recycle"></span> Rác Tái Chế</li>
+        <li><span class="dot hazard"></span> Rác Nguy Hại</li>
+        <li><span class="dot residual"></span> Rác Còn Lại</li>
+      </ul>
+    </div>
+
+    <div class="f-col">
+      <h3 class="f-title">Thông tin đồ án</h3>
+      <p class="f-info"><strong>Đồ án 4:</strong> Smart Recycle Assistant</p>
+      <p class="f-info"><strong>Mô hình:</strong> CNN MobileNetV2 / EfficientNet</p>
+      <p class="f-info"><strong>Backend:</strong> FastAPI &amp; SQLite</p>
+      <div class="f-social">
+        <a href="https://github.com" target="_blank" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
+        <a href="home.html#cong-nghe" aria-label="Tài liệu công nghệ"><i class="fa-solid fa-code"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="f-bottom">
+    <div class="wrap f-bottom-wrap">
+      <p>© 2026 Smart Recycle Assistant. Tất cả quyền được bảo lưu.</p>
+      <p>Phát triển vì mục tiêu Môi Trường Xanh - Việt Nam</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Bottom Navigation for Mobile -->
+<nav class="bottom-nav-mobile" aria-label="Điều hướng điện thoại">
+  <div class="b-nav-container">
+    <a href="home.html" class="b-item" id="nav-home">
+      <i class="fa-solid fa-camera"></i>
+      <span>Quét AI</span>
+    </a>
+    <a href="history.html" class="b-item active" id="nav-history">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>Lịch sử</span>
+    </a>
+    <a href="map.html" class="b-item" id="nav-map">
+      <i class="fa-solid fa-map-location-dot"></i>
+      <span>Điểm gom</span>
+    </a>
+    <a href="profile.html" class="b-item" id="nav-profile">
+      <i class="fa-solid fa-user"></i>
+      <span>Tài khoản</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+  // Hàm lọc nhanh rác thải theo danh mục
+  function filterCategory(group, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cards = document.querySelectorAll('.history-list .card');
+    cards.forEach(card => {
+      if (group === 'all' || card.dataset.group === group) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+</body>
+</html>

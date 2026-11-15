@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài Khoản Cá Nhân – Smart Recycle Assistant</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#0E3A30',
+                        brandLight: '#14493D',
+                        accent: '#1F7A5A',
+                        mintBg: '#F4F7F5',
+                        sun: '#F6C733'
+                    },
+                    fontFamily: {
+                        sans: ['"Be Vietnam Pro"', 'sans-serif'],
+                        head: ['"Bricolage Grotesque"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #F4F7F5; }
+        h1, h2, h3 { font-family: 'Bricolage Grotesque', 'Be Vietnam Pro', sans-serif; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen pb-20 md:pb-12">
+
+    <!-- Header Navigation Desktop -->
+    <header class="bg-brand text-white sticky top-0 z-30 border-b border-brandLight/50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="home.html" class="flex items-center space-x-2.5 font-bold text-lg text-white">
+                <span class="flex items-end space-x-0.5">
+                    <b class="w-2 h-3 bg-emerald-400 rounded-sm"></b>
+                    <b class="w-2 h-5 bg-blue-400 rounded-sm"></b>
+                    <b class="w-2 h-4 bg-red-400 rounded-sm"></b>
+                    <b class="w-2 h-6 bg-gray-400 rounded-sm"></b>
+                </span>
+                <span class="tracking-tight">Smart Recycle</span>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-7 text-sm font-medium">
+                <a href="home.html" class="text-emerald-100/80 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-camera text-xs"></i> Quét AI</a>
+                <a href="history.html" class="text-emerald-100/80 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Lịch sử</a>
+                <a href="map.html" class="text-emerald-100/80 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-map-location-dot text-xs"></i> Trạm thu gom</a>
+                <a href="profile.html" class="text-white font-bold border-b-2 border-sun pb-0.5 flex items-center gap-1.5"><i class="fa-solid fa-user text-xs"></i> Tài khoản</a>
+                <button onclick="logout()" class="bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white font-semibold px-3.5 py-1.5 rounded-lg transition text-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 pt-6 space-y-5">
+
+        <!-- Card Top: Hồ Sơ Người Dùng -->
+        <section class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200/80 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
+            <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                <div class="relative">
+                    <img id="avatarImg" src="https://ui-avatars.com/api/?name=Nguyen+Van+A&background=1F7A5A&color=fff&size=128" alt="Avatar" class="w-16 h-16 rounded-full border-2 border-emerald-500/30 object-cover shadow-sm">
+                    <span class="absolute bottom-0 right-0 bg-amber-400 text-gray-900 text-[10px] p-1 rounded-full border-2 border-white" title="Chiến binh Xanh">
+                        <i class="fa-solid fa-leaf"></i>
+                    </span>
+                </div>
+                <div>
+                    <div class="flex items-center justify-center sm:justify-start gap-2">
+                        <h1 class="text-xl font-bold text-gray-900" id="userName">Nguyễn Văn A</h1>
+                        <span class="bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200">Cấp 3</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-0.5" id="userEmail">nguyenvana@gmail.com</p>
+                    <p class="text-xs text-emerald-700 font-medium mt-1.5 flex items-center justify-center sm:justify-start gap-1">
+                        <i class="fa-solid fa-award"></i> Danh hiệu: <span class="font-bold">Chiến binh Xanh</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tích điểm & Đăng xuất Mobile -->
+            <div class="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-gray-100 gap-2">
+                <div class="bg-amber-50/80 text-amber-800 px-3.5 py-1.5 rounded-xl border border-amber-200/60 text-right">
+                    <span class="text-[11px] block font-medium text-amber-700">Điểm thưởng</span>
+                    <span class="text-lg font-extrabold text-amber-900 flex items-center gap-1">
+                        <i class="fa-solid fa-coins text-amber-500 text-sm"></i> 350 <small class="text-xs font-normal">pts</small>
+                    </span>
+                </div>
+                <button onclick="logout()" class="sm:hidden text-xs text-red-600 bg-red-50 font-bold px-3 py-1.5 rounded-lg border border-red-100">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Thoát
+                </button>
+            </div>
+        </section>
+
+        <!-- Tiến trình Lên Cấp (Level Progress) -->
+        <section class="bg-white rounded-2xl p-4 shadow-sm border border-gray-200/80 space-y-2">
+            <div class="flex justify-between text-xs font-bold">
+                <span class="text-gray-700"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i> Tiến trình Đại Sứ Xanh</span>
+                <span class="text-emerald-700">350 / 500 pts</span>
+            </div>
+            <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                <div class="bg-emerald-600 h-2.5 rounded-full transition-all duration-500" style="width: 70%"></div>
+            </div>
+            <p class="text-[11px] text-gray-500">Còn <b class="text-gray-700">150 điểm</b> nữa để mở khóa danh hiệu <b>Đại Sứ Tái Chế</b>.</p>
+        </section>
+
+        <!-- Thống Kê Hoạt Động (KPI Dashboard) -->
+        <section class="grid grid-cols-3 gap-3 text-center">
+            <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-gray-200/80 space-y-0.5">
+                <span class="text-2xl font-extrabold text-emerald-700 block">28</span>
+                <span class="text-[11px] font-semibold text-gray-500 block">Lượt quét AI</span>
+            </div>
+            <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-gray-200/80 space-y-0.5">
+                <span class="text-2xl font-extrabold text-blue-600 block">18</span>
+                <span class="text-[11px] font-semibold text-gray-500 block">Món tái chế</span>
+            </div>
+            <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-gray-200/80 space-y-0.5">
+                <span class="text-2xl font-extrabold text-amber-600 block">5.2<small class="text-xs">kg</small></span>
+                <span class="text-[11px] font-semibold text-gray-500 block">Giảm CO2</span>
+            </div>
+        </section>
+
+        <!-- Danh Sách Chức Năng / Menu Cài Đặt -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200/80 overflow-hidden divide-y divide-gray-100 text-sm">
+            
+            <!-- Trang Quản Trị Admin -->
+            <a href="admin.html" class="flex items-center justify-between p-3.5 hover:bg-emerald-50/50 transition">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-user-gear text-xs"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-emerald-900 block leading-tight">Bảng Quản Trị (Admin Dashboard)</span>
+                        <span class="text-[11px] text-gray-500">Dành cho Admin và Giảng viên hướng dẫn</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-emerald-700"></i>
+            </a>
+
+            <!-- Đổi mật khẩu -->
+            <button onclick="alert('Chức năng đổi mật khẩu đang được tích hợp!')" class="w-full flex items-center justify-between p-3.5 hover:bg-gray-50 transition text-left">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center">
+                        <i class="fa-solid fa-key text-xs"></i>
+                    </div>
+                    <span class="font-medium text-gray-700">Đổi mật khẩu tài khoản</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+            </button>
+
+            <!-- Toggle Dark Mode -->
+            <div class="flex items-center justify-between p-3.5">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center">
+                        <i class="fa-solid fa-moon text-xs"></i>
+                    </div>
+                    <span class="font-medium text-gray-700">Giao diện tối (Dark Mode)</span>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" onchange="toggleDarkMode(this)" class="sr-only peer">
+                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                </label>
+            </div>
+
+            <!-- Hướng dẫn Luật Môi Trường -->
+            <a href="https://thuvienphapluat.vn" target="_blank" class="flex items-center justify-between p-3.5 hover:bg-gray-50 transition">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center">
+                        <i class="fa-solid fa-scale-balanced text-xs"></i>
+                    </div>
+                    <span class="font-medium text-gray-700">Quy định phân loại rác theo Luật BVMT</span>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-400"></i>
+            </a>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-brand text-emerald-100/80 pt-8 pb-6 mt-10 text-xs border-t border-brandLight">
+        <div class="max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-white/10">
+            <div class="space-y-2">
+                <a class="font-bold text-sm text-white flex items-center gap-1.5" href="home.html">
+                    <span>Smart Recycle Assistant</span>
+                </a>
+                <p class="leading-relaxed text-emerald-200/70">Trợ lý AI hỗ trợ người dân phân loại rác thải tại nguồn nhanh chóng và chính xác.</p>
+            </div>
+            <div>
+                <h3 class="text-white font-bold mb-2">Liên kết nhanh</h3>
+                <ul class="space-y-1">
+                    <li><a href="home.html" class="hover:text-sun transition"><i class="fa-solid fa-camera mr-1"></i> Quét AI</a></li>
+                    <li><a href="history.html" class="hover:text-sun transition"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Lịch sử</a></li>
+                    <li><a href="map.html" class="hover:text-sun transition"><i class="fa-solid fa-map-location-dot mr-1"></i> Trạm thu gom</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-white font-bold mb-2">Thông tin công nghệ</h3>
+                <p><b>Model:</b> CNN MobileNetV2</p>
+                <p class="mt-0.5"><b>Backend:</b> Python FastAPI &amp; SQLite</p>
+            </div>
+        </div>
+        <div class="max-w-4xl mx-auto px-4 pt-3 text-center text-emerald-300/50">
+            © 2026 Smart Recycle Assistant. Phát triển vì môi trường Việt Nam.
+        </div>
+    </footer>
+
+    <!-- Bottom Navigation Bar Mobile -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200/80 z-30 shadow-lg">
+        <div class="max-w-md mx-auto flex justify-around py-2">
+            <a href="home.html" class="flex flex-col items-center text-gray-400 hover:text-emerald-700">
+                <i class="fa-solid fa-camera text-base"></i>
+                <span class="text-[10px] mt-0.5 font-medium">Quét AI</span>
+            </a>
+            <a href="history.html" class="flex flex-col items-center text-gray-400 hover:text-emerald-700">
+                <i class="fa-solid fa-clock-rotate-left text-base"></i>
+                <span class="text-[10px] mt-0.5 font-medium">Lịch sử</span>
+            </a>
+            <a href="map.html" class="flex flex-col items-center text-gray-400 hover:text-emerald-700">
+                <i class="fa-solid fa-map-location-dot text-base"></i>
+                <span class="text-[10px] mt-0.5 font-medium">Trạm gom</span>
+            </a>
+            <a href="profile.html" class="flex flex-col items-center text-emerald-700">
+                <i class="fa-solid fa-user text-base"></i>
+                <span class="text-[10px] mt-0.5 font-bold">Tài khoản</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Tự động load dữ liệu người dùng từ localStorage
+        try {
+            const userStr = localStorage.getItem('sr_user');
+            if (userStr) {
+                const u = JSON.parse(userStr);
+                if (u.name) {
+                    document.getElementById('userName').textContent = u.name;
+                    document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=1F7A5A&color=fff&size=128`;
+                }
+                if (u.email) document.getElementById('userEmail').textContent = u.email;
+            }
+        } catch (e) {}
+
+        function logout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất tài khoản?')) {
+                localStorage.removeItem('sr_user');
+                localStorage.removeItem('sr_token');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function toggleDarkMode(checkbox) {
+            if (checkbox.checked) {
+                alert('Tính năng giao diện tối (Dark Mode) đã được kích hoạt!');
+            }
+        }
+    </script>
+</body>
+</html>

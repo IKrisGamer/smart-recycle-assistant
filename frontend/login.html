@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đăng nhập – Smart Recycle Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#0e3a30;--deep2:#14493d;--mint:#e6f1e8;--ink:#10231d;--muted:#4d6258;--sun:#f6c733;--err:#c0301c;--organic:#2e7d46;--recycle:#2a6fdb;--hazard:#d23c27;--residual:#5b6672}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--mint);color:var(--ink);line-height:1.6;min-height:100vh}
+:focus-visible{outline:3px solid var(--recycle);outline-offset:2px}
+.page{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+
+/* Bên trái */
+.side{background:var(--deep);color:#fff;padding:36px 48px;display:flex;flex-direction:column;justify-content:space-between;border-radius:0 40px 40px 0;position:relative;overflow:hidden}
+.side::before{content:"";position:absolute;right:-120px;top:-140px;width:420px;height:420px;border-radius:50%;border:56px solid var(--deep2)}
+.brand{font-weight:800;color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px;position:relative}
+.logo{display:flex;gap:3px;align-items:flex-end}
+.logo b{width:9px;border-radius:2px 2px 4px 4px}
+.side h1{font-size:clamp(2.2rem,4.4vw,3.5rem);line-height:1.04;font-weight:900;letter-spacing:-.03em;position:relative}
+.side p{margin-top:16px;color:#cfe3d8;max-width:36ch;position:relative}
+.mini{display:flex;gap:12px;align-items:flex-end;margin-top:34px;position:relative}
+.mini div{flex:0 0 64px;border-radius:4px 4px 12px 12px;background:var(--c);height:var(--h);position:relative;clip-path:polygon(0 0,100% 0,92% 100%,8% 100%)}
+.mini div::before{content:"";position:absolute;left:-3px;right:-3px;top:-8px;height:8px;border-radius:5px 5px 1px 1px;background:var(--c);filter:brightness(.8)}
+.mini div{margin-top:8px}
+.back{color:#bcd6c9;font-size:14px;text-decoration:none;position:relative}
+.back:hover{color:#fff}
+
+/* Form */
+.main{display:flex;align-items:center;justify-content:center;padding:32px 22px}
+.box{width:100%;max-width:420px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#d5e4d9;border-radius:14px;padding:4px}
+.tab{background:transparent;border:0;font:inherit;font-weight:700;color:var(--muted);padding:11px;border-radius:11px;cursor:pointer}
+.tab[aria-selected="true"]{background:#fff;color:var(--ink);box-shadow:0 2px 8px -2px rgba(0,0,0,.2)}
+h2{font-size:1.75rem;font-weight:800;letter-spacing:-.02em;margin-top:28px}
+.sub{color:var(--muted);margin-top:4px;font-size:15px}
+form{margin-top:22px;display:grid;gap:16px}
+.f label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.f .in{position:relative}
+.f input{width:100%;font:inherit;padding:13px 14px;border-radius:12px;border:2px solid #c3d5c8;background:#fff;color:var(--ink)}
+.f input:focus{outline:none;border-color:var(--organic);box-shadow:0 0 0 4px rgba(46,125,70,.18)}
+.f.bad input{border-color:var(--err)}
+.err{color:var(--err);font-size:13px;margin-top:5px;min-height:0}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;font:inherit;font-size:13px;font-weight:700;color:var(--muted);padding:8px 10px;cursor:pointer}
+.bar{display:flex;gap:4px;margin-top:8px}
+.bar i{flex:1;height:5px;border-radius:3px;background:#cfdad2}
+.bar[data-s="1"] i:nth-child(-n+1){background:var(--hazard)}
+.bar[data-s="2"] i:nth-child(-n+2){background:var(--sun)}
+.bar[data-s="3"] i:nth-child(-n+3){background:#7bbf5a}
+.bar[data-s="4"] i{background:var(--organic)}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+.row{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.row label{display:flex;gap:8px;align-items:center;font-weight:500}
+.row input{accent-color:var(--organic);width:17px;height:17px}
+.submit{background:var(--sun);color:var(--ink);border:0;font:inherit;font-weight:800;font-size:1rem;padding:14px;border-radius:12px;cursor:pointer;transition:transform .15s}
+.submit:hover:not(:disabled){transform:translateY(-2px)}
+.submit:disabled{opacity:.6;cursor:wait}
+.msg{padding:11px 14px;border-radius:12px;font-size:14px}
+.msg[hidden]{display:none}
+.msg.error{background:#fbe3de;color:#8f2312}
+.msg.ok{background:#d6ecdb;color:#1d5a31}
+.switch{margin-top:18px;text-align:center;font-size:14px;color:var(--muted)}
+.switch button{background:none;border:0;font:inherit;font-weight:700;color:var(--recycle);cursor:pointer;text-decoration:underline}
+.or{display:flex;align-items:center;gap:12px;margin-top:22px;color:var(--muted);font-size:13px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:#bfd1c5}
+.social{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.sbtn{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border:2px solid #c3d5c8;border-radius:12px;padding:12px 6px;font:inherit;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;transition:border-color .15s,transform .15s}
+.sbtn:hover:not(:disabled){border-color:var(--ink);transform:translateY(-2px)}
+.sbtn:disabled{opacity:.6;cursor:wait}
+.sbtn svg{width:24px;height:24px}
+[hidden]{display:none!important}
+
+@media(max-width:860px){
+  .page{grid-template-columns:1fr}
+  .side{border-radius:0 0 32px 32px;padding:24px 22px 28px;gap:14px}
+  .side h1{font-size:1.8rem}
+  .side p, .mini{display:none}
+  .back{margin-top:0; font-weight:700}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+  <aside class="side">
+    <a class="brand" href="home.html"><span class="logo" aria-hidden="true"><b style="height:12px;background:#5fc27a"></b><b style="height:18px;background:#5b9bf5"></b><b style="height:15px;background:#f2735f"></b><b style="height:21px;background:#9aa6b2"></b></span>Smart Recycle</a>
+    <div>
+      <h1>Mỗi món rác phân loại đúng đều được lưu lại.</h1>
+      <p>Đăng nhập để xem lịch sử, theo dõi lượng rác đã phân loại và nhận hướng dẫn tái chế phù hợp.</p>
+      <div class="mini" aria-hidden="true">
+        <div style="--c:var(--organic);--h:90px"></div><div style="--c:var(--recycle);--h:130px"></div><div style="--c:var(--hazard);--h:70px"></div><div style="--c:var(--residual);--h:110px"></div>
+      </div>
+    </div>
+    <a class="back" href="home.html">Quay lại trang chủ</a>
+  </aside>
+
+  <main class="main">
+    <div class="box">
+      <div class="tabs" role="tablist" aria-label="Đăng nhập hoặc đăng ký">
+        <button class="tab" role="tab" id="t-login" aria-selected="true" aria-controls="form" type="button">Đăng nhập</button>
+        <button class="tab" role="tab" id="t-reg" aria-selected="false" aria-controls="form" type="button">Đăng ký</button>
+      </div>
+      <h2 id="title">Chào mừng quay lại</h2>
+      <p class="sub" id="sub">Nhập email và mật khẩu để tiếp tục.</p>
+
+      <form id="form" novalidate>
+        <div class="msg" id="msg" hidden role="alert"></div>
+
+        <div class="f" id="f-name" hidden>
+          <label for="name">Họ và tên</label>
+          <div class="in"><input id="name" type="text" autocomplete="name" placeholder="Nguyễn Văn A"></div>
+          <div class="err"></div>
+        </div>
+        <div class="f" id="f-email">
+          <label for="email">Email</label>
+          <div class="in"><input id="email" type="email" autocomplete="email" placeholder="ban@email.com"></div>
+          <div class="err"></div>
+        </div>
+        <div class="f" id="f-pass">
+          <label for="pass">Mật khẩu</label>
+          <div class="in"><input id="pass" type="password" autocomplete="current-password" placeholder="Ít nhất 8 ký tự"><button class="eye" type="button" data-for="pass" aria-label="Hiện mật khẩu">Hiện</button></div>
+          <div class="bar" id="bar" data-s="0" hidden><i></i><i></i><i></i><i></i></div>
+          <div class="hint" id="hint" hidden></div>
+          <div class="err"></div>
+        </div>
+        <div class="f" id="f-pass2" hidden>
+          <label for="pass2">Nhập lại mật khẩu</label>
+          <div class="in"><input id="pass2" type="password" autocomplete="new-password"><button class="eye" type="button" data-for="pass2" aria-label="Hiện mật khẩu">Hiện</button></div>
+          <div class="err"></div>
+        </div>
+
+        <div class="row" id="row-remember"><label><input type="checkbox" id="remember" checked>Ghi nhớ đăng nhập</label></div>
+        <button class="submit" id="submit" type="submit">Đăng nhập</button>
+      </form>
+
+      <div class="or" id="orText">hoặc đăng nhập bằng</div>
+      <div class="social">
+        <button class="sbtn" type="button" data-provider="google" aria-label="Tiếp tục với Google">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.5 12.2c0-.8-.1-1.5-.2-2.2H12v4.2h5.9a5 5 0 0 1-2.2 3.3v2.7h3.5c2.1-1.9 3.3-4.700 3.3-8z"/><path fill="#34A853" d="M12 23c3 0 5.500-1 7.300-2.700l-3.500-2.700c-1 .7-2.300 1-3.800 1-2.900 0-5.400-2-6.300-4.600H2.100v2.800A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.700 14c-.2-.7-.4-1.300-.4-2s.1-1.400.4-2V7.200H2.100a11 11 0 0 0 0 9.600z"/><path fill="#EA4335" d="M12 5.400c1.600 0 3.100.6 4.200 1.700l3.100-3.100A11 11 0 0 0 2.100 7.200L5.700 10c.9-2.600 3.400-4.600 6.300-4.600z"/></svg>Google</button>
+        <button class="sbtn" type="button" data-provider="facebook" aria-label="Tiếp tục với Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#1877F2"/><path fill="#fff" d="M13.400 22v-8h2.700l.4-3.200h-3.100V8.900c0-.9.300-1.500 1.600-1.500h1.700V4.500c-.3 0-1.300-.1-2.400-.1-2.400 0-4 1.500-4 4.100v2.300H7.600V14h2.700v8z"/></svg>Facebook</button>
+        <button class="sbtn" type="button" data-provider="zalo" aria-label="Tiếp tục với Zalo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#0068FF"/><text x="12" y="16" text-anchor="middle" font-family="Be Vietnam Pro,Arial,sans-serif" font-weight="800" font-size="9" fill="#fff">Zalo</text></svg>Zalo</button>
+      </div>
+      <p class="hint" id="socialNote" style="margin-top:10px;text-align:center" hidden></p>
+
+      <p class="switch" id="switch">Chưa có tài khoản? <button type="button" id="goReg">Đăng ký ngay</button></p>
+    </div>
+  </main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let mode="login";
+
+function setMode(m){
+  mode=m;const reg=m==="register";
+  $("t-login").setAttribute("aria-selected",!reg);$("t-reg").setAttribute("aria-selected",reg);
+  $("title").textContent=reg?"Tạo tài khoản mới":"Chào mừng quay lại";
+  $("sub").textContent=reg?"Chỉ mất một phút. Bạn sẽ có lịch sử phân loại của riêng mình.":"Nhập email và mật khẩu để tiếp tục.";
+  $("f-name").hidden=!reg;$("f-pass2").hidden=!reg;$("bar").hidden=!reg;$("hint").hidden=!reg;
+  $("row-remember").hidden=reg;
+  $("pass").autocomplete=reg?"new-password":"current-password";
+  $("submit").textContent=reg?"Tạo tài khoản":"Đăng nhập";
+  $("switch").innerHTML=reg?'Đã có tài khoản? <button type="button" id="goLogin">Đăng nhập</button>':'Chưa có tài khoản? <button type="button" id="goReg">Đăng ký ngay</button>';
+  $("orText").textContent=reg?"hoặc đăng ký nhanh bằng":"hoặc đăng nhập bằng";
+  document.title=(reg?"Đăng ký":"Đăng nhập")+" – Smart Recycle Assistant";
+  clearErrors();
+}
+$("t-login").onclick=()=>setMode("login");
+$("t-reg").onclick=()=>setMode("register");
+$("switch").addEventListener("click",e=>{if(e.target.id==="goReg")setMode("register");if(e.target.id==="goLogin")setMode("login")});
+if(location.hash==="#register")setMode("register");
+
+document.querySelectorAll(".eye").forEach(b=>b.onclick=()=>{
+  const i=$(b.dataset.for),show=i.type==="password";
+  i.type=show?"text":"password";b.textContent=show?"Ẩn":"Hiện";
+  b.setAttribute("aria-label",show?"Ẩn mật khẩu":"Hiện mật khẩu");
+});
+
+/* Độ mạnh mật khẩu */
+function strength(p){let s=0;if(p.length>=8)s++;if(/[a-z]/.test(p)&&/[A-Z]/.test(p))s++;if(/\d/.test(p))s++;if(/[^A-Za-z0-9]/.test(p)||p.length>=12)s++;return s}
+$("pass").addEventListener("input",()=>{
+  if(mode!=="register")return;
+  const s=strength($("pass").value);$("bar").dataset.s=$("pass").value?s:0;
+  $("hint").textContent=$("pass").value?["","Yếu","Tạm được","Khá tốt","Mạnh"][s]:"";
+});
+
+function setErr(id,text){
+  const f=$(id);f.classList.toggle("bad",!!text);f.querySelector(".err").textContent=text||"";
+  const inp=f.querySelector("input");if(inp)inp.setAttribute("aria-invalid",!!text);
+}
+function clearErrors(){["f-name","f-email","f-pass","f-pass2"].forEach(i=>setErr(i,""));$("msg").hidden=true}
+function validate(){
+  clearErrors();let ok=true;const v=id=>$(id).value.trim();
+  if(mode==="register"&&v("name").length<2){setErr("f-name","Vui lòng nhập họ và tên.");ok=false}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("email"))){setErr("f-email","Email chưa đúng định dạng, ví dụ ban@email.com.");ok=false}
+  const p=$("pass").value;
+  if(!p){setErr("f-pass","Vui lòng nhập mật khẩu.");ok=false}
+  else if(mode==="register"&&p.length<8){setErr("f-pass","Mật khẩu cần ít nhất 8 ký tự.");ok=false}
+  if(mode==="register"&&$("pass2").value!==p){setErr("f-pass2","Mật khẩu nhập lại chưa khớp.");ok=false}
+  return ok;
+}
+function msg(type,text){const m=$("msg");m.className="msg "+type;m.textContent=text;m.hidden=false}
+
+$("form").addEventListener("submit",async e=>{
+  e.preventDefault();if(!validate())return;
+  const btn=$("submit"),label=btn.textContent;btn.disabled=true;btn.textContent="Đang xử lý...";
+  const reg=mode==="register";
+  const body={email:$("email").value.trim(),password:$("pass").value};
+  if(reg)body.name=$("name").value.trim();
+  let user,demo=false;
+  try{
+    /* Backend FastAPI:
+       POST /api/auth/register  {name,email,password}
+       POST /api/auth/login     {email,password}
+       Thành công: {"token":"...","user":{"name":"...","email":"..."}}
+       Lỗi: HTTP 400/401/409 kèm {"detail":"thông báo"} */
+    const r=await fetch(reg?"/api/auth/register":"/api/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok){msg("error",d.detail||(r.status===401?"Email hoặc mật khẩu chưa đúng.":r.status===409?"Email này đã được đăng ký. Hãy đăng nhập.":"Có lỗi xảy ra, vui lòng thử lại."));btn.disabled=false;btn.textContent=label;return}
+    user=d.user;try{localStorage.setItem("sr_token",d.token)}catch(_){}
+  }catch(err){
+    demo=true;user={name:body.name||body.email.split("@")[0],email:body.email};
+  }
+  try{localStorage.setItem("sr_user",JSON.stringify(user))}catch(_){}
+  msg("ok",(reg?"Tạo tài khoản thành công. ":"Đăng nhập thành công. ")+(demo?"Chưa kết nối backend nên đây là chế độ demo. ":"")+"Đang chuyển về trang chủ...");
+  setTimeout(()=>location.href="home.html",demo?1600:900);
+});
+
+/* Đăng nhập mạng xã hội (OAuth).
+   Backend: GET /api/auth/{provider}/url  ->  {"url":"https://accounts.google.com/..."}
+   Frontend chuyển người dùng sang url đó. Sau khi xác thực, backend redirect về
+   home.html và đã lưu phiên đăng nhập. */
+const NAMES={google:"Google",facebook:"Facebook",zalo:"Zalo"};
+document.querySelectorAll(".sbtn").forEach(b=>b.addEventListener("click",async()=>{
+  const p=b.dataset.provider,all=document.querySelectorAll(".sbtn");
+  all.forEach(x=>x.disabled=true);
+  const note=$("socialNote");note.hidden=false;note.textContent="Đang chuyển sang "+NAMES[p]+"...";
+  try{
+    const r=await fetch("/api/auth/"+p+"/url");
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const d=await r.json();
+    location.href=d.url;
+  }catch(err){
+    /* Chế độ demo khi chưa có backend */
+    try{localStorage.setItem("sr_user",JSON.stringify({name:"Người dùng "+NAMES[p],email:"",provider:p}))}catch(_){}
+    msg("ok","Chưa kết nối backend nên đây là chế độ demo "+NAMES[p]+". Đang chuyển về trang chủ...");
+    note.hidden=true;
+    setTimeout(()=>location.href="home.html",1600);
+  }
+}));
+</script>
+</body>
+</html>
