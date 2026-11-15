@@ -15,6 +15,6 @@ class User(Base):
     display_name: Mapped[str | None] = mapped_column(String(100))
     phone: Mapped[str | None] = mapped_column(String(20), unique=True)
     status: Mapped[str] = mapped_column(String(20), default="active")
-    create_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     
  

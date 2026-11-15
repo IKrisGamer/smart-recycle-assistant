@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 
 
-class WasteGruop(Base):
+class WasteGroup(Base):
     __tablename__ = "waste_groups"
     
     code: Mapped[str] = mapped_column(String(20), primary_key=True)

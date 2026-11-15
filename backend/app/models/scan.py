@@ -11,10 +11,10 @@ class ScanSession(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
-    scan_stype: Mapped[str] = mapped_column(String(20), default="image")
+    scan_type: Mapped[str] = mapped_column(String(20), default="image")
     material_code: Mapped[str] = mapped_column(ForeignKey("materials.code"))
     confidence: Mapped[float]
     contents_state: Mapped[str | None] = mapped_column(String(20))
     image_path: Mapped[str | None] = mapped_column(String(255))
     corrected_material: Mapped[str | None] = mapped_column(ForeignKey("materials.code"))
-    create_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow) 
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow) 
