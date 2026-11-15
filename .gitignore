@@ -234,9 +234,16 @@ ai/data/*
 *.h5
 *.pt
 *.ckpt
+*.keras
 
 # Khác
 __pycache__/
 *.pyc
 .vscode/
 .idea/
+
+# CSDL cục bộ
+*.db
+
+# Công cụ cá nhân
+graphify-out/
