@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from datetime import datetime, timezone
 
 DATABASE_URL = "sqlite:///./smart_recycle.db"
 
@@ -17,3 +18,8 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def utcnow():
+    return datetime.now(timezone.utc)
+

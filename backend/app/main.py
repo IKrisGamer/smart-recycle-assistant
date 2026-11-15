@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
+import app.models # noqa: F401 (nạp model để create_all thấy các bảng)
 
 Base.metadata.create_all(bind=engine)
 
