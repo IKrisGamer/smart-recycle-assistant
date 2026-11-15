@@ -50,6 +50,12 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
 .bg-hazard{background:var(--hazard)}
 .bg-residual{background:var(--residual)}
 .btn-detail{color:var(--deep);font-size:18px;text-decoration:none;padding:8px}
+.card .ph{width:70px;height:70px;border-radius:12px;background:#e2ebe5;display:grid;place-items:center;color:var(--muted);font-size:22px;flex-shrink:0}
+.tag-fix{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;background:#fff6d6;color:#5e4b00;border:1px solid #ecd36a}
+.list-note{font-size:13.5px;color:var(--muted);margin-top:4px}
+.list-note[hidden]{display:none}
+.title-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.stats-link{display:inline-flex;align-items:center;gap:6px;background:var(--deep);color:#fff;text-decoration:none;font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px}
 
 @media(max-width:900px){
   nav.main-nav{display:none}
@@ -298,51 +304,13 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
 <!-- Main Content -->
 <main class="wrap">
   <div class="page-header">
-    <h1 class="page-title">Lịch sử phân loại</h1>
+    <div class="title-row"><h1 class="page-title">Lịch sử phân loại</h1><a class="stats-link" href="stats.html"><i class="fa-solid fa-chart-column"></i> Xem thống kê</a></div>
     <!-- Bộ lọc loại rác nhanh -->
-    <div class="filter-tabs">
-      <button class="tab-btn active" onclick="filterCategory('all', this)">Tất cả</button>
-      <button class="tab-btn" onclick="filterCategory('recycle', this)">Tái chế</button>
-      <button class="tab-btn" onclick="filterCategory('organic', this)">Hữu cơ</button>
-      <button class="tab-btn" onclick="filterCategory('hazard', this)">Nguy hại</button>
-      <button class="tab-btn" onclick="filterCategory('residual', this)">Còn lại</button>
-    </div>
+    <div class="filter-tabs" id="filterTabs"></div>
   </div>
-  
-  <div class="history-list" id="historyList">
-    <!-- Item 1 -->
-    <div class="card" data-group="recycle">
-      <img src="https://images.unsplash.com/photo-1528190336454-13cd56b45b5a?w=150" alt="Chai nhựa">
-      <div class="card-info">
-        <h3>Chai Nhựa PET</h3>
-        <p><i class="fa-regular fa-clock"></i> 10:30 - 11/10/2026</p>
-        <span class="badge bg-recycle">Tái chế (94%)</span>
-      </div>
-      <a href="detail.html" class="btn-detail"><i class="fa-solid fa-chevron-right"></i></a>
-    </div>
 
-    <!-- Item 2 -->
-    <div class="card" data-group="recycle">
-      <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=150" alt="Vỏ lon">
-      <div class="card-info">
-        <h3>Lon Nhôm Bia</h3>
-        <p><i class="fa-regular fa-clock"></i> 08:15 - 10/10/2026</p>
-        <span class="badge bg-recycle">Tái chế (89%)</span>
-      </div>
-      <a href="detail.html" class="btn-detail"><i class="fa-solid fa-chevron-right"></i></a>
-    </div>
-
-    <!-- Item 3 -->
-    <div class="card" data-group="hazard">
-      <img src="https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=150" alt="Pin cũ">
-      <div class="card-info">
-        <h3>Pin Tiểu AA Cũ</h3>
-        <p><i class="fa-regular fa-clock"></i> 16:45 - 08/10/2026</p>
-        <span class="badge bg-hazard">Rác Nguy Hại (98%)</span>
-      </div>
-      <a href="detail.html" class="btn-detail"><i class="fa-solid fa-chevron-right"></i></a>
-    </div>
-  </div>
+  <p class="list-note" id="listNote" hidden></p>
+  <div class="history-list" id="historyList"></div>
 </main>
 
 <!-- Footer -->
@@ -429,21 +397,77 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
   </div>
 </nav>
 
+<script src="knowledge.js"></script>
 <script>
-  // Hàm lọc nhanh rác thải theo danh mục
-  function filterCategory(group, btn) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+/* Lịch sử quét: đọc từ localStorage (result.html ghi vào khóa "scanHistory").
+   Sau này có backend thì thay readHistory() bằng fetch GET /history */
+const HKEY="scanHistory";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+function readHistory(){try{return JSON.parse(localStorage.getItem(HKEY))||[]}catch(e){return[]}}
 
-    const cards = document.querySelectorAll('.history-list .card');
-    cards.forEach(card => {
-      if (group === 'all' || card.dataset.group === group) {
-        card.style.display = 'flex';
-      } else {
-        card.style.display = 'none';
-      }
-    });
+/* Dữ liệu mẫu: chỉ hiện khi chưa quét ảnh nào */
+const SAMPLES=[
+  {label:"nhua",confidence:.94,time:new Date(2026,9,11,10,30).getTime()},
+  {label:"kim_loai",confidence:.89,time:new Date(2026,9,10,8,15).getTime()},
+  {label:"pin_nguy_hai",confidence:.98,time:new Date(2026,9,8,16,45).getTime()}
+];
+
+function buildTabs(){
+  const tabs=[["all","Tất cả"],...Object.entries(GROUPS).map(([k,g])=>[k,g.name])];
+  $("filterTabs").innerHTML=tabs.map(([k,n],i)=>
+    `<button class="tab-btn${i?"":" active"}" data-group="${k}">${esc(n)}</button>`).join("");
+  $("filterTabs").addEventListener("click",e=>{
+    const btn=e.target.closest(".tab-btn");if(!btn)return;
+    filterCategory(btn.dataset.group,btn);
+  });
+}
+
+function cardHTML(r,sample){
+  const key=normLabel(r.label),c=CLASSES[key],g=GROUPS[c.g];
+  const pct=Math.round(Math.max(0,Math.min(1,Number(r.confidence)||0))*100);
+  const t=new Date(r.time||Date.now());
+  const when=t.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})+" - "+t.toLocaleDateString("vi-VN");
+  const pic=r.image?`<img src="${esc(r.image)}" alt="${esc(c.name)}">`:`<div class="ph"><i class="fa-solid ${g.icon}"></i></div>`;
+  const link=sample?"result.html":"result.html?id="+encodeURIComponent(r.id);
+  return `<div class="card" data-group="${c.g}">
+      ${pic}
+      <div class="card-info">
+        <h3>${esc(c.name)}</h3>
+        <p><i class="fa-regular fa-clock"></i> ${when}</p>
+        <span class="badge" style="background:${g.color}">${esc(g.name)} (${pct}%)</span>${r.corrected?'<span class="tag-fix">Đã sửa nhãn</span>':""}
+      </div>
+      <a href="${link}" class="btn-detail" aria-label="Xem chi tiết"><i class="fa-solid fa-chevron-right"></i></a>
+    </div>`;
+}
+
+// Hàm lọc nhanh rác thải theo nhóm
+function filterCategory(group, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.history-list .card').forEach(card => {
+    card.style.display = (group === 'all' || card.dataset.group === group) ? 'flex' : 'none';
+  });
+}
+
+async function start(){
+  try{await loadKnowledge()}
+  catch(e){
+    console.error(e);
+    $("listNote").hidden=false;
+    $("listNote").textContent="Không đọc được f2_knowledge.json. Hãy mở trang bằng Live Server (không nhấp đôi vào file).";
+    return;
   }
+  buildTabs();
+  const list=readHistory();
+  const sample=list.length===0;
+  if(sample){
+    $("listNote").hidden=false;
+    $("listNote").textContent="Bạn chưa quét ảnh nào. Dưới đây là dữ liệu mẫu để minh họa giao diện.";
+  }
+  $("historyList").innerHTML=(sample?SAMPLES:list).map(r=>cardHTML(r,sample)).join("");
+}
+start();
 </script>
 </body>
 </html>

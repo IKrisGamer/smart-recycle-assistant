@@ -1,0 +1,212 @@
+{
+  "version": "1.2",
+  "updated": "2026-11-14",
+  "source": "Phân nhóm theo Điều 75 Luật Bảo vệ môi trường 2020; khóa lớp lấy theo labels.json của mô hình",
+  "groups": {
+    "thuc_pham": {
+      "name": "Chất thải thực phẩm",
+      "color": "#2e7d46",
+      "short": "Thực phẩm",
+      "icon": "fa-leaf",
+      "hint": "Để ráo, bỏ thùng riêng"
+    },
+    "tai_che": {
+      "name": "Chất thải rắn có khả năng tái sử dụng, tái chế",
+      "color": "#2a6fdb",
+      "short": "Tái chế",
+      "icon": "fa-recycle",
+      "hint": "Sạch, khô, ép dẹp"
+    },
+    "nguy_hai": {
+      "name": "Chất thải nguy hại",
+      "color": "#d23c27",
+      "short": "Nguy hại",
+      "icon": "fa-triangle-exclamation",
+      "hint": "Gom riêng, mang đến điểm thu"
+    },
+    "khac": {
+      "name": "Chất thải rắn sinh hoạt khác",
+      "color": "#5b6672",
+      "short": "Rác khác",
+      "icon": "fa-trash",
+      "hint": "Buộc kín, bỏ đúng nơi quy định"
+    }
+  },
+  "labels": {
+    "giay": {
+      "name": "Giấy",
+      "group": "tai_che",
+      "warning": null,
+      "guide": {
+        "summary": "Giữ giấy khô và sạch, gom riêng để bán ve chai hoặc giao cho đơn vị thu gom tái chế.",
+        "steps": [
+          "Gỡ băng keo, ghim bấm, bìa nhựa ra khỏi giấy.",
+          "Gấp phẳng thùng carton, xếp chồng giấy báo và giấy văn phòng cho gọn.",
+          "Để nơi khô ráo, không để lẫn với rác ướt.",
+          "Bán ve chai hoặc bỏ vào thùng rác tái chế."
+        ],
+        "dont": [
+          "Không bỏ chung giấy dính dầu mỡ, thức ăn (hộp pizza bẩn, giấy gói đồ ăn).",
+          "Không bỏ khăn giấy, giấy vệ sinh đã dùng vào nhóm tái chế; các loại này thuộc rác khác."
+        ],
+        "examples": [
+          "Giấy báo",
+          "Giấy in, vở cũ",
+          "Thùng carton",
+          "Hộp giấy sạch"
+        ],
+        "reuse": "Dùng làm hộp lưu trữ, giấy nháp hoặc lót luống rau."
+      }
+    },
+    "nhua": {
+      "name": "Nhựa",
+      "group": "tai_che",
+      "warning": null,
+      "guide": {
+        "summary": "Đổ hết phần còn lại, tráng sơ, ép dẹp rồi gom riêng để tái chế.",
+        "steps": [
+          "Đổ hết nước hoặc thức ăn còn sót bên trong.",
+          "Tráng sơ bằng nước và để ráo.",
+          "Ép dẹp chai, hộp để tiết kiệm chỗ.",
+          "Gom chung với rác tái chế, bán ve chai hoặc bỏ vào thùng tái chế."
+        ],
+        "dont": [
+          "Không bỏ chung nhựa còn dính nhiều dầu mỡ, thức ăn.",
+          "Không đốt nhựa vì tạo khói độc."
+        ],
+        "examples": [
+          "Chai nước",
+          "Hộp nhựa đựng thực phẩm",
+          "Can, bình nhựa",
+          "Chai dầu gội, sữa tắm"
+        ],
+        "reuse": "Cắt đáy chai làm chậu trồng rau mầm hoặc ống đựng bút."
+      }
+    },
+    "kim_loai": {
+      "name": "Kim loại",
+      "group": "tai_che",
+      "warning": null,
+      "guide": {
+        "summary": "Tráng sạch, ép dẹp lon và gom riêng; kim loại tái chế được nhiều lần và có giá trị thu mua.",
+        "steps": [
+          "Đổ hết phần còn lại và tráng sơ bằng nước.",
+          "Ép dẹp lon nhôm; với hộp thiếc, ấn nắp vào trong để tránh đứt tay.",
+          "Gom riêng với rác tái chế.",
+          "Bán ve chai hoặc bỏ vào thùng tái chế."
+        ],
+        "dont": [
+          "Không bỏ chung bình xịt, bình gas mini còn khí bên trong; đây là chất thải nguy hại.",
+          "Không để cạnh sắc lộ ra ngoài túi rác."
+        ],
+        "examples": [
+          "Lon nước ngọt, lon bia",
+          "Hộp thiếc, hộp sữa bột",
+          "Nắp chai kim loại",
+          "Đồ gia dụng bằng kim loại hỏng"
+        ],
+        "reuse": "Làm hộp đựng đồ dùng văn phòng hoặc chậu cây nhỏ."
+      }
+    },
+    "thuy_tinh": {
+      "name": "Thủy tinh",
+      "group": "tai_che",
+      "warning": null,
+      "guide": {
+        "summary": "Tráng sạch, để nguyên chai lọ và gom riêng; thủy tinh vỡ cần bọc kỹ trước khi bỏ.",
+        "steps": [
+          "Đổ hết phần còn lại, tráng sạch và để ráo.",
+          "Tháo nắp nhựa hoặc nắp kim loại để phân loại riêng.",
+          "Giữ chai lọ nguyên vẹn, xếp vào thùng cứng để tránh vỡ.",
+          "Bán ve chai hoặc bỏ vào thùng tái chế."
+        ],
+        "dont": [
+          "Không bỏ thủy tinh vỡ trực tiếp vào túi rác; hãy bọc bằng giấy báo hoặc cho vào hộp và ghi chú 'thủy tinh vỡ'.",
+          "Không bỏ chung bóng đèn huỳnh quang, nhiệt kế thủy ngân; đây là chất thải nguy hại."
+        ],
+        "examples": [
+          "Chai nước mắm, chai bia",
+          "Lọ mứt, lọ gia vị",
+          "Ly, cốc thủy tinh",
+          "Chai mỹ phẩm bằng thủy tinh"
+        ],
+        "reuse": "Chai lọ dùng lại để đựng gia vị, nến thơm hoặc bình hoa."
+      }
+    },
+    "huu_co": {
+      "name": "Rác hữu cơ",
+      "group": "thuc_pham",
+      "warning": null,
+      "guide": {
+        "summary": "Để ráo nước, bỏ vào thùng riêng có nắp và đổ hằng ngày; có thể ủ làm phân bón.",
+        "steps": [
+          "Để ráo nước trước khi bỏ.",
+          "Bỏ vào thùng hoặc túi riêng dành cho rác thực phẩm, đậy kín nắp.",
+          "Đổ rác hằng ngày để tránh mùi và ruồi muỗi.",
+          "Nếu có điều kiện, ủ làm phân hữu cơ để bón cây."
+        ],
+        "dont": [
+          "Không để lẫn túi ni lông, hộp xốp, ống hút vào rác thực phẩm.",
+          "Không đổ dầu mỡ thừa xuống cống."
+        ],
+        "examples": [
+          "Thức ăn thừa",
+          "Vỏ rau củ, trái cây",
+          "Bã trà, bã cà phê",
+          "Vỏ trứng, xương cá"
+        ],
+        "reuse": "Ủ phân hữu cơ bón cây hoặc làm enzyme rửa sàn từ vỏ trái cây."
+      }
+    },
+    "pin_nguy_hai": {
+      "name": "Pin và chất thải nguy hại",
+      "group": "nguy_hai",
+      "warning": "Chất thải nguy hại! Không bỏ chung với rác sinh hoạt. Hãy mang đến điểm thu gom chất thải nguy hại riêng.",
+      "guide": {
+        "summary": "Cất riêng trong hộp khô, kín và mang đến điểm thu gom chất thải nguy hại; tuyệt đối không bỏ vào thùng rác thường.",
+        "steps": [
+          "Dán băng keo lên hai cực của pin để tránh chập điện.",
+          "Cho vào hộp hoặc túi kín, để nơi khô ráo, xa tầm tay trẻ em.",
+          "Gom đủ số lượng rồi mang đến điểm thu gom pin, chất thải nguy hại tại địa phương.",
+          "Hỏi tổ dân phố hoặc đơn vị thu gom rác về lịch và địa điểm thu gom chất thải nguy hại."
+        ],
+        "dont": [
+          "Không bỏ chung với rác sinh hoạt hay rác tái chế.",
+          "Không đập, tháo, đốt hoặc ngâm nước.",
+          "Không tiếp tục sạc hay sử dụng pin bị phồng, chảy nước."
+        ],
+        "examples": [
+          "Pin tiểu, pin cúc áo",
+          "Pin điện thoại, pin sạc dự phòng",
+          "Ắc quy",
+          "Bóng đèn huỳnh quang"
+        ],
+        "reuse": "Không tái sử dụng tại nhà. Ưu tiên điểm thu hồi của cửa hàng hoặc địa phương."
+      }
+    },
+    "rac_khac": {
+      "name": "Rác khác",
+      "group": "khac",
+      "warning": null,
+      "guide": {
+        "summary": "Rác không tái chế được và không phải thực phẩm: cho vào túi, buộc kín và bỏ đúng nơi, đúng giờ quy định.",
+        "steps": [
+          "Kiểm tra lại xem có phần nào tách ra để tái chế được không (nắp nhựa, vỏ hộp giấy sạch).",
+          "Cho phần còn lại vào túi rác và buộc kín miệng túi.",
+          "Bỏ vào thùng rác sinh hoạt hoặc giao cho xe thu gom đúng giờ quy định."
+        ],
+        "dont": [
+          "Không để lẫn pin, bóng đèn, hóa chất vào nhóm này.",
+          "Không vứt ra đường, kênh rạch hay đốt ngoài trời."
+        ],
+        "examples": [
+          "Khăn giấy, tã bỉm đã dùng",
+          "Đồ sành sứ vỡ",
+          "Đầu lọc thuốc lá",
+          "Bao bì nhiều lớp dính bẩn"
+        ],
+        "reuse": "Xem lại có thể sửa hoặc tặng lại không trước khi bỏ."
+      }
+    }
+  }
+}
