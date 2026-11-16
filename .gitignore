@@ -235,6 +235,7 @@ ai/data/*
 *.pt
 *.ckpt
 *.keras
+*.onnx
 
 # Khác
 __pycache__/
@@ -247,3 +248,7 @@ __pycache__/
 
 # Công cụ cá nhân
 graphify-out/
+# Anh nguoi dung va file mo hinh (chia se qua Drive)
+backend/uploads/
+ai/models/*.onnx
+ai/models/*.keras
