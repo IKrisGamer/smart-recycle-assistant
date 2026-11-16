@@ -26,7 +26,7 @@ F8 điểm thưởng, F9 bản đồ, F10 trang quản trị làm sau nếu còn
 | Mô hình nhận diện ảnh (A) | Xong bản đầu: MobileNetV2, 7 lớp, 90,56% trên tập test, 83 ms/ảnh. Chưa có lớp `tui_ni_long_xop`. File mô hình không đưa lên Git. |
 | Giao diện | 7 trang HTML tĩnh trong `frontend/`, chưa nối API |
 | Backend (B) | Xong khung FastAPI, `/health`, SQLite và 6 bảng (PR #13) |
-| Tiếp theo | B nạp dữ liệu mẫu, sau đó `POST /predict` dùng nhãn giả để A nạp mô hình vào |
+| Tiếp theo | A đang làm `/predict` và `/history` (PR #14). B nạp dữ liệu mẫu và bật khóa ngoại, sau đó làm F4 đăng nhập. |
 
 ## Nhóm rác
 
