@@ -66,7 +66,7 @@ Gửi một ảnh, nhận về loại rác, độ tin cậy, nhóm rác và hư�
 ```
 
 - `confidence` là số từ 0 đến 1. Giao diện coi dưới 0.6 là "AI chưa chắc chắn".
-- `id` là mã bản ghi lịch sử, dùng cho `/feedback`. **(đề xuất, A xác nhận)**
+- `id` là mã bản ghi lịch sử, dùng cho `/feedback`. (A đã làm, backend trả đúng trường này)
 - `group` và `guide` lấy bằng hàm có sẵn của C:
 
 ```python
@@ -78,13 +78,44 @@ group, guide = get_guide(label)
 
 ## GET /history (A)
 
-A điền: tham số, định dạng trả về.
+Trả danh sách các lần quét, **mới nhất trước**.
 
-Giao diện hiện cần mỗi mục có: `id`, `label`, `confidence`, `time`, `image`,
-và nếu đã sửa nhãn thì thêm `corrected: true`, `original: "<nhãn AI dự đoán>"`.
+**Tham số (query):**
 
+- `limit`: số mục tối đa, mặc định 50, từ 1 đến 200.
+- `offset`: bỏ qua bấy nhiêu mục đầu, mặc định 0 (dùng để phân trang).
+
+Ví dụ: `GET /history?limit=20&offset=0`
+
+**Nhận:**
+
+```json
+[
+  {
+    "id": 12,
+    "label": "nhua",
+    "confidence": 0.9971,
+    "time": "2026-11-16T04:23:56+00:00",
+    "image": "/uploads/844338b691094c4b82766ea90d7dadab.jpg"
+  },
+  {
+    "id": 11,
+    "label": "giay",
+    "confidence": 0.88,
+    "time": "2026-11-15T09:10:02+00:00",
+    "image": "/uploads/a1b2c3d4....jpg",
+    "corrected": true,
+    "original": "nhua"
+  }
+]
+```
+
+- `label` là nhãn **cuối cùng**: nếu người dùng đã sửa nhãn thì là nhãn đã sửa.
+- Chỉ khi đã sửa nhãn mới có thêm `corrected: true` và `original` (nhãn AI dự đoán).
+- `time` theo ISO 8601, múi giờ UTC.
+- `image` là đường dẫn tương đối. Ghép sau địa chỉ backend để hiện ảnh, ví dụ `http://localhost:8000/uploads/844338b6....jpg`. Có thể là `null` nếu bản ghi không có ảnh.
+- Chưa có người dùng: hiện trả toàn bộ lịch sử của mọi người, chưa lọc theo tài khoản. Khi B xong đăng nhập (JWT) sẽ lọc theo người dùng.
 ---
-
 ## GET /guide (C)
 
 Trả toàn bộ nội dung `backend/app/data/f2_knowledge.json`, gồm `groups` và `labels`.
