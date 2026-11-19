@@ -615,7 +615,7 @@ async function start(){
   try{await loadKnowledge()}
   catch(e){
     console.error(e);note.hidden=false;
-    note.textContent="Không đọc được f2_knowledge.json. Hãy mở trang bằng Live Server (không nhấp đôi vào file).";
+    note.textContent="Không tải được bảng tri thức từ máy chủ. Hãy chạy backend (uvicorn app.main:app --reload) rồi tải lại trang.";
     return;
   }
   try{

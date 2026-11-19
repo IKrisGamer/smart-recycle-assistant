@@ -455,7 +455,7 @@ async function start(){
   catch(e){
     console.error(e);
     $("listNote").hidden=false;
-    $("listNote").textContent="Không đọc được f2_knowledge.json. Hãy mở trang bằng Live Server (không nhấp đôi vào file).";
+    $("listNote").textContent="Không tải được bảng tri thức từ máy chủ. Hãy chạy backend (uvicorn app.main:app --reload) rồi tải lại trang.";
     return;
   }
   buildTabs();

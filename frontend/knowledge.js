@@ -2,11 +2,11 @@
    Nạp f2_knowledge.json rồi dựng 2 biến GROUPS và CLASSES theo đúng dạng các trang đang dùng.
    Cách dùng:  await loadKnowledge();  rồi dùng GROUPS, CLASSES, normLabel() như bình thường. */
 
-/* Khi backend có GET /guide thì đổi thành URL của API, ví dụ "http://localhost:8000/guide" */
-const KNOWLEDGE_URL="f2_knowledge.json";
+/* Bảng tri thức lấy từ backend (GET /guide). Cần chạy server: uvicorn app.main:app --reload */
+const KNOWLEDGE_URL="http://localhost:8000/guide";
 
 /* Nhãn kiểu cũ của giao diện mẫu -> nhãn của mô hình (labels.json) */
-const LEGACY_LABELS={plastic:"nhua",metal:"kim_loai",paper:"giay",glass:"thuy_tinh",food:"huu_co",hazard:"pin_nguy_hai",soft:"rac_khac",other:"rac_khac"};
+const LEGACY_LABELS={plastic:"nhua",metal:"kim_loai",paper:"giay",glass:"thuy_tinh",food:"huu_co",hazard:"pin_nguy_hai",soft:"tui_ni_long_xop",other:"rac_khac"};
 const FALLBACK_LABEL="rac_khac";
 
 let GROUPS={}, CLASSES={};

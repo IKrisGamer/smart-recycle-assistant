@@ -482,7 +482,7 @@ async function start(){
   catch(e){
     console.error(e);
     $("rName").textContent="Không tải được hướng dẫn";
-    $("rHow").textContent="Không đọc được f2_knowledge.json. Hãy mở trang bằng Live Server (không nhấp đôi vào file).";
+    $("rHow").textContent="Không tải được bảng tri thức từ máy chủ. Hãy chạy backend (uvicorn app.main:app --reload) rồi tải lại trang.";
     return;
   }
   buildBins();buildChoices();
