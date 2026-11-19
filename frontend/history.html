@@ -358,10 +358,10 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
     <div class="f-col">
       <h3 class="f-title">Thông tin đồ án</h3>
       <p class="f-info"><strong>Đồ án 4:</strong> Smart Recycle Assistant</p>
-      <p class="f-info"><strong>Mô hình:</strong> CNN MobileNetV2 / EfficientNet</p>
+      <p class="f-info"><strong>Mô hình:</strong> MobileNetV2</p>
       <p class="f-info"><strong>Backend:</strong> FastAPI &amp; SQLite</p>
       <div class="f-social">
-        <a href="https://github.com" target="_blank" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
+        <a href="https://github.com/tinh-nguyen-thanh/smart-recycle-assistant" target="_blank" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
         <a href="home.html#cong-nghe" aria-label="Tài liệu công nghệ"><i class="fa-solid fa-code"></i></a>
       </div>
     </div>
@@ -403,9 +403,22 @@ nav.main-nav a.btn-login{background:var(--sun);color:var(--ink);padding:6px 16px
    Sau này có backend thì thay readHistory() bằng fetch GET /history */
 const HKEY="scanHistory";
 const $=id=>document.getElementById(id);
+const API_BASE="http://127.0.0.1:8000";
 const esc=s=>String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 function readHistory(){try{return JSON.parse(localStorage.getItem(HKEY))||[]}catch(e){return[]}}
 
+/* Lấy lịch sử từ backend; lỗi thì dùng lịch sử lưu trong trình duyệt */
+async function loadHistory(){
+  try{
+    const r=await fetch(API_BASE+"/history?limit=100");
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const items=await r.json();
+    return items.map(it=>({...it,image:it.image?API_BASE+it.image:null}));
+  }catch(err){
+    console.warn("Không gọi được /history, dùng lịch sử lưu trong trình duyệt:",err);
+    return readHistory();
+  }
+}
 /* Dữ liệu mẫu: chỉ hiện khi chưa quét ảnh nào */
 const SAMPLES=[
   {label:"nhua",confidence:.94,time:new Date(2026,9,11,10,30).getTime()},
@@ -459,7 +472,7 @@ async function start(){
     return;
   }
   buildTabs();
-  const list=readHistory();
+  const list=await loadHistory();
   const sample=list.length===0;
   if(sample){
     $("listNote").hidden=false;
