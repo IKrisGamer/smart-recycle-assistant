@@ -234,9 +234,21 @@ ai/data/*
 *.h5
 *.pt
 *.ckpt
+*.keras
+*.onnx
 
 # Khác
 __pycache__/
 *.pyc
 .vscode/
 .idea/
+
+# CSDL cục bộ
+*.db
+
+# Công cụ cá nhân
+graphify-out/
+# Anh nguoi dung va file mo hinh (chia se qua Drive)
+backend/uploads/
+ai/models/*.onnx
+ai/models/*.keras
