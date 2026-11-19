@@ -30,14 +30,14 @@ F8 điểm thưởng, F9 bản đồ, F10 trang quản trị làm sau nếu còn
 
 ## Nhóm rác
 
-Hệ thống dùng 4 nhóm. Mã vật liệu trùng với nhãn trong `labels.json` của mô hình.
+Hệ thống dùng 4 nhóm theo Luật Bảo vệ môi trường 2020, mã nhóm thống nhất với `docs/api.md` và file tri thức F2. Mã vật liệu trùng với nhãn trong `ai/models/labels.json` của mô hình.
 
 | Nhóm (`waste_groups.code`) | Vật liệu (`materials.code`) |
 |---|---|
-| `tai_che`: rác tái chế | `giay`, `nhua`, `kim_loai`, `thuy_tinh` |
-| `huu_co`: rác hữu cơ | `huu_co` |
-| `nguy_hai`: rác nguy hại (hiện cảnh báo, mang đến điểm thu gom riêng) | `pin_nguy_hai` |
-| `con_lai`: rác còn lại | `rac_khac` |
+| `thuc_pham`: chất thải thực phẩm | `huu_co` |
+| `tai_che`: chất thải rắn có khả năng tái sử dụng, tái chế | `giay`, `nhua`, `kim_loai`, `thuy_tinh` |
+| `nguy_hai`: chất thải nguy hại (hiện cảnh báo, mang đến điểm thu gom riêng) | `pin_nguy_hai` |
+| `khac`: chất thải rắn sinh hoạt khác | `rac_khac` |
 
 ## Cấu trúc thư mục
 
