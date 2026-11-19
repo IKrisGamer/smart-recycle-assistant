@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.database import Base, engine
 import app.models  # noqa: F401 (nạp model để create_all thấy các bảng)
-from app.routers import predict
+from app.routers import guide, predict
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,6 +16,7 @@ UPLOAD_DIR = Path(__file__).resolve().parents[1] / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.include_router(predict.router)
+app.include_router(guide.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
