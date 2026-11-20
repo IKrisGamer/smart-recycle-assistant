@@ -23,10 +23,11 @@ F8 điểm thưởng, F9 bản đồ, F10 trang quản trị làm sau nếu còn
 
 | Phần | Trạng thái |
 |---|---|
-| Mô hình nhận diện ảnh (A) | Xong bản đầu: MobileNetV2, 7 lớp, 90,56% trên tập test, 83 ms/ảnh. Chưa có lớp `tui_ni_long_xop`. File mô hình không đưa lên Git. |
-| Giao diện | 7 trang HTML tĩnh trong `frontend/`, chưa nối API |
+| Mô hình nhận diện ảnh (A) | Xong bản đầu: MobileNetV2, 7 lớp, 90,56% trên tập test; suy luận khoảng 5 ms/ảnh trên CPU Intel Core i5-13420H (ONNX Runtime, chỉ tính bước mô hình). Chưa có lớp `tui_ni_long_xop`, cần thêm ảnh để huấn luyện lại. File mô hình `.onnx` không đưa lên Git, nhận từ A. |
+| Giao diện | `home.html` và `history.html` đã nối `/predict`, `/history` (PR #16), tự dùng kết quả mẫu khi backend chưa chạy. Các trang còn lại chưa nối API. |
 | Backend (B) | Xong khung FastAPI, `/health`, SQLite và 6 bảng (PR #13) |
-| Tiếp theo | A đang làm `/predict` và `/history` (PR #14). B nạp dữ liệu mẫu và bật khóa ngoại, sau đó làm F4 đăng nhập. |
+| Backend (A, C) | `/predict`, `/history` (PR #14) và `/guide` (PR #17) đã xong, `/predict` trả kèm nhóm và hướng dẫn xử lý. |
+| Tiếp theo | A huấn luyện lại mô hình 8 lớp (thêm `tui_ni_long_xop`). B nạp dữ liệu mẫu và bật khóa ngoại, sau đó làm F4 đăng nhập. |
 
 ## Nhóm rác
 
@@ -42,13 +43,13 @@ Hệ thống dùng 4 nhóm theo Luật Bảo vệ môi trường 2020, mã nhóm
 ## Cấu trúc thư mục
 
 ```
-ai/          notebook huấn luyện, dữ liệu, mô hình (dữ liệu và *.keras không commit)
+ai/          notebook huấn luyện, dữ liệu, mô hình (dữ liệu, *.keras và *.onnx không commit)
 backend/
   app/
     main.py        khởi tạo FastAPI, CORS, tạo bảng
     database.py    kết nối SQLite, get_db, utcnow
     models/        6 bảng: users, waste_groups, materials, guides, scan_sessions, chat_messages
-    routers/       mỗi nhóm API một file (predict, history, chat, auth, stats)
+    routers/       mỗi nhóm API một file (predict gồm /predict và /history, guide, chat, auth, stats)
     services/      xử lý nghiệp vụ, ví dụ tra hướng dẫn
   requirements.txt
 frontend/    giao diện HTML
@@ -57,16 +58,16 @@ docs/        báo cáo, use case, wireframe, api.md
 
 ## Chạy backend
 
-Yêu cầu Python 3.10 trở lên. Chạy trong thư mục `backend`:
+Yêu cầu Python 3.10 trở lên. Cần đặt file `smart_recycle_model.onnx` (nhận từ A) vào `ai/models/`, cùng chỗ với `labels.json`, nếu không `/predict` sẽ báo lỗi. Chạy trong thư mục `backend`:
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 ```
 
-Mở http://127.0.0.1:8000/health thấy `{"status":"ok"}` là được, xem các API tại http://127.0.0.1:8000/docs. File CSDL `smart_recycle.db` tự tạo khi chạy lần đầu. Khi đổi cấu trúc bảng thì xóa file này rồi chạy lại.
+Mở http://127.0.0.1:8000/health thấy `{"status":"ok"}` là được, xem các API tại http://127.0.0.1:8000/docs. File CSDL `smart_recycle.db` tự tạo khi chạy lần đầu. Khi đổi cấu trúc bảng thì xóa file này rồi chạy lại. Mở giao diện bằng Live Server (cổng 5500), backend chạy ở cổng 8000.
 
 ## Quy ước làm việc
 
@@ -74,5 +75,5 @@ Mở http://127.0.0.1:8000/health thấy `{"status":"ok"}` là được, xem cá
 2. **Thống nhất định dạng API trước khi code**, ghi vào `docs/api.md`.
 3. **Mỗi việc một nhánh `feature/...`** tạo từ `main` mới nhất. Không push thẳng lên `main`. Tạo Pull Request, người khác review rồi mới merge.
 4. Trước khi commit, chạy `git branch --show-current` và `git status` để chắc chắn đúng nhánh, đúng file.
-5. Không commit `.env`, `.venv/`, bộ dữ liệu ảnh, file mô hình `*.keras` và file CSDL `*.db`.
+5. Không commit `.env`, `.venv/`, bộ dữ liệu ảnh, file mô hình `*.keras`, `*.onnx` và file CSDL `*.db`.
 6. Mỗi tuần 15 phút để từng người trình bày phần vừa làm cho 2 người còn lại.
