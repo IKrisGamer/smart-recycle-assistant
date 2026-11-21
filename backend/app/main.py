@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.database import Base, engine
 import app.models  # noqa: F401 (nạp model để create_all thấy các bảng)
-from app.routers import guide, predict, stats
+from app.routers import stats, guide, predict
 
 Base.metadata.create_all(bind=engine)
 

@@ -482,7 +482,7 @@ async function start(){
   catch(e){
     console.error(e);
     $("rName").textContent="Không tải được hướng dẫn";
-    $("rHow").textContent="Không đọc được f2_knowledge.json. Hãy mở trang bằng Live Server (không nhấp đôi vào file).";
+    $("rHow").textContent="Không đọc được bảng tri thức. Hãy bật backend (cổng 8000) và mở trang bằng Live Server.";
     return;
   }
   buildBins();buildChoices();

@@ -1,6 +1,6 @@
 {
-  "version": "1.2",
-  "updated": "2026-11-14",
+  "version": "1.3",
+  "updated": "2026-11-19",
   "source": "Phân nhóm theo Điều 75 Luật Bảo vệ môi trường 2020; khóa lớp lấy theo labels.json của mô hình",
   "groups": {
     "thuc_pham": {
@@ -206,6 +206,32 @@
           "Bao bì nhiều lớp dính bẩn"
         ],
         "reuse": "Xem lại có thể sửa hoặc tặng lại không trước khi bỏ."
+      }
+    },
+    "tui_ni_long_xop": {
+      "name": "Túi ni lông và hộp xốp",
+      "group": "khac",
+      "warning": null,
+      "guide": {
+        "summary": "Đổ bỏ thức ăn, nước còn sót, gom gọn rồi bỏ vào nhóm rác sinh hoạt khác. Túi ni lông còn sạch nên giữ lại dùng nhiều lần.",
+        "steps": [
+          "Đổ bỏ thức ăn, nước còn sót trong hộp xốp, ly, túi.",
+          "Gom các túi ni lông lại, cho vào một túi và buộc kín cho gọn.",
+          "Ép nhỏ hộp xốp để tiết kiệm chỗ.",
+          "Bỏ vào thùng rác sinh hoạt khác hoặc giao cho xe thu gom đúng giờ quy định."
+        ],
+        "dont": [
+          "Không đốt túi ni lông, hộp xốp vì tạo khói độc.",
+          "Không để lẫn vào rác thực phẩm hay rác tái chế.",
+          "Không vứt xuống cống, kênh rạch."
+        ],
+        "examples": [
+          "Túi ni lông đựng đồ",
+          "Hộp xốp đựng cơm",
+          "Ly trà sữa dính bẩn",
+          "Màng bọc thực phẩm"
+        ],
+        "reuse": "Dùng lại túi ni lông sạch nhiều lần, mang túi vải hoặc hộp riêng khi đi mua đồ ăn."
       }
     }
   }
