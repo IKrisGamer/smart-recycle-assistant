@@ -106,7 +106,6 @@ footer{padding:56px 0 36px;color:var(--muted);font-size:14px}
   .bins{grid-template-columns:repeat(2,1fr);margin-top:44px}
   .steps{grid-template-columns:1fr}
   nav.main-nav{display:none}
-  .bottom-nav{display:block}
 }
 /* ================= CSS FOOTER CHUNG ================= */
 .site-footer {
@@ -365,7 +364,7 @@ footer{padding:56px 0 36px;color:var(--muted);font-size:14px}
           <svg viewBox="0 0 48 48" fill="none" stroke="#2e7d46" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15h8l3-5h14l3 5h8v22H6z"/><circle cx="24" cy="25" r="7"/></svg>
           <strong>Chụp hoặc chọn ảnh rác</strong>
           <span>Kéo thả ảnh vào đây, hoặc bấm để mở camera</span>
-          <input type="file" id="file" accept="image/*" capture="environment" aria-label="Chọn ảnh rác">
+          <input type="file" id="file" accept="image/*" aria-label="Chọn ảnh rác">
         </label>
         <div class="btns">
           <button class="go" id="go" disabled>Phân loại ảnh này</button>
@@ -396,32 +395,10 @@ footer{padding:56px 0 36px;color:var(--muted);font-size:14px}
   <section id="cong-nghe">
     <h2>Công nghệ phía sau</h2>
     <p class="sub">Đồ án 4: web app chạy trên điện thoại và máy tính, mô hình huấn luyện bằng transfer learning.</p>
-    <div class="stack"><span>MobileNetV2 / EfficientNet</span><span>TensorFlow</span><span>Google Colab</span><span>FastAPI</span><span>SQLite</span><span>TrashNet · TACO · ảnh tự chụp</span></div>
+    <div class="stack"><span>MobileNetV2</span><span>TensorFlow · ONNX Runtime</span><span>Google Colab</span><span>FastAPI</span><span>SQLite</span><span>TrashNet · Kaggle Garbage · ảnh tự chụp</span></div>
   </section>
-  <footer>Smart Recycle Assistant </footer>
 </div>
 
-<!-- Thanh điều hướng màn hình di động (Bottom Navigation Bar) -->
-<nav class="bottom-nav">
-  <div class="nav-container">
-    <a href="home.html" class="active">
-      <i class="fa-solid fa-camera"></i>
-      <span>Quét AI</span>
-    </a>
-    <a href="history.html">
-      <i class="fa-solid fa-clock-rotate-left"></i>
-      <span>Lịch sử</span>
-    </a>
-    <a href="map.html">
-      <i class="fa-solid fa-map-location-dot"></i>
-      <span>Điểm gom</span>
-    </a>
-    <a href="profile.html">
-      <i class="fa-solid fa-user"></i>
-      <span>Tài khoản</span>
-    </a>
-  </div>
-</nav>
 <!-- ================= FOOTER CHUNG CHO TOÀN BỘ CÁC TRANG ================= -->
 <footer class="site-footer">
   <div class="wrap footer-content">
@@ -442,7 +419,7 @@ footer{padding:56px 0 36px;color:var(--muted);font-size:14px}
       </p>
       <div class="f-badges">
         <span class="f-tag"><i class="fa-solid fa-leaf"></i> Phân loại chuẩn</span>
-        <span class="f-tag"><i class="fa-solid fa-bolt"></i> Phản hồi < 3s</span>
+        <span class="f-tag"><i class="fa-solid fa-bolt"></i> Phản hồi &lt; 3s</span>
       </div>
     </div>
 
@@ -472,10 +449,10 @@ footer{padding:56px 0 36px;color:var(--muted);font-size:14px}
     <div class="f-col">
       <h3 class="f-title">Thông tin đồ án</h3>
       <p class="f-info"><strong>Đồ án 4:</strong> Smart Recycle Assistant</p>
-      <p class="f-info"><strong>Mô hình:</strong> CNN MobileNetV2 / EfficientNet</p>
+      <p class="f-info"><strong>Mô hình:</strong> MobileNetV2</p>
       <p class="f-info"><strong>Backend:</strong> FastAPI & SQLite</p>
       <div class="f-social">
-        <a href="https://github.com" target="_blank" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
+        <a href="https://github.com/tinh-nguyen-thanh/smart-recycle-assistant" target="_blank" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
         <a href="home.html#cong-nghe" aria-label="Tài liệu công nghệ"><i class="fa-solid fa-code"></i></a>
       </div>
     </div>
@@ -516,6 +493,7 @@ footer{padding:56px 0 36px;color:var(--muted);font-size:14px}
 <script>
 /* Bảng tri thức F2: GROUPS và CLASSES do knowledge.js nạp từ f2_knowledge.json */
 const $=id=>document.getElementById(id);
+const API_BASE = "http://127.0.0.1:8000";
 
 /* Dựng 4 thùng (chờ nạp xong bảng tri thức) */
 function buildBins(){
@@ -584,13 +562,14 @@ $("go").addEventListener("click", async () => {
   if (!currentFile) return;
   await ready;   /* bảo đảm bảng tri thức đã nạp xong */
   $("go").disabled = true; $("go").textContent = "Đang phân tích...";
-  let label, confidence, demo = false;
+  let id, label, confidence, demo = false;
   try {
     const fd = new FormData(); fd.append("file", currentFile);
-    const r = await fetch("/api/predict", { method: "POST", body: fd });
+    const r = await fetch(API_BASE + "/predict", { method: "POST", body: fd });
     if (!r.ok) throw new Error("HTTP " + r.status);
-    ({ label, confidence } = await r.json());
+    ({ id, label, confidence } = await r.json());
   } catch (err) {
+    console.warn("Không gọi được backend, dùng kết quả mẫu:", err);
     const k = Object.keys(CLASSES);
     label = k[Math.floor(Math.random() * k.length)];
     confidence = 0.8 + Math.random() * 0.15;
@@ -598,7 +577,7 @@ $("go").addEventListener("click", async () => {
   }
   const image = await toDataURL(currentFile);
   sessionStorage.setItem("scanResult", JSON.stringify({
-    label, confidence, demo, image, time: Date.now()
+    id, label, confidence, demo, image, time: Date.now()
   }));
   location.href = "result.html";
 });

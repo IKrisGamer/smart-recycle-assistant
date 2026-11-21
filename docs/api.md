@@ -115,9 +115,7 @@ Ví dụ: `GET /history?limit=20&offset=0`
 - `time` theo ISO 8601, múi giờ UTC.
 - `image` là đường dẫn tương đối. Ghép sau địa chỉ backend để hiện ảnh, ví dụ `http://localhost:8000/uploads/844338b6....jpg`. Có thể là `null` nếu bản ghi không có ảnh.
 - Chưa có người dùng: hiện trả toàn bộ lịch sử của mọi người, chưa lọc theo tài khoản. Khi B xong đăng nhập (JWT) sẽ lọc theo người dùng.
-
 ---
-
 ## GET /guide (C)
 
 Trả toàn bộ nội dung `backend/app/data/f2_knowledge.json`, gồm `groups` và `labels`.
@@ -201,6 +199,6 @@ B điền: trường gửi lên, định dạng token, cách giao diện gửi t
 ## Việc cần nhóm chốt
 
 1. Có dùng tiền tố `/api` hay không.
-2. `/predict` có yêu cầu đăng nhập không (A đã chốt: có trả `id`).
+2. `/predict` có trả `id` bản ghi không, và có yêu cầu đăng nhập không.
 3. Người chưa đăng nhập quét ảnh thì lịch sử lưu ở đâu (trình duyệt hay không lưu).
 4. `/stats` tính theo từng người dùng hay toàn hệ thống.
