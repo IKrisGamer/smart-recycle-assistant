@@ -468,7 +468,7 @@ async function start(){
   catch(e){
     console.error(e);
     $("listNote").hidden=false;
-    $("listNote").textContent="Không đọc được f2_knowledge.json. Hãy mở trang bằng Live Server (không nhấp đôi vào file).";
+    $("listNote").textContent="Không đọc được bảng tri thức. Hãy bật backend (cổng 8000) và mở trang bằng Live Server.";
     return;
   }
   buildTabs();
